@@ -1,0 +1,113 @@
+//@version=5
+// SPY 15-minute Opening Range Breakout + VWAP (version 1, testing only)
+// Use on a SPY 5-minute chart, regular trading hours. Mirrors engine.py:
+//   range 9:30-9:45; signal = first 5-minute CLOSE above the range high and above VWAP (long)
+//   or below the range low and below VWAP (short), before the cutoff; entry at the next bar's open;
+//   one trade per day; anything open closes at 3:55 PM.
+strategy("SPY ORB-15 + VWAP", overlay=true, initial_capital=25000, default_qty_type=strategy.fixed,
+     default_qty_value=100, commission_type=strategy.commission.cash_per_contract, commission_value=0.0,
+     slippage=1, process_orders_on_close=false, calc_on_every_tick=false)
+
+tz          = "America/New_York"
+orMinutes   = input.int(15, "Opening range minutes", options=[5, 15, 30])
+cutoffHHMM  = input.int(1130, "No new signals from (HHMM)")
+stopMode    = input.string("Other side of range", "Stop", options=["Other side of range", "Middle of range", "VWAP"])
+targetMode  = input.string("2R", "Target", options=["1R", "2R", "Range width", "Hold to 3:55 PM", "Half at 1R, trail VWAP"])
+bufferPct   = input.float(0.01, "Stop buffer (% of price)", step=0.01)
+maxRiskPct  = input.float(1.0, "Skip if risk above (% of price)", step=0.1)
+minRiskPct  = input.float(0.05, "Skip if risk below (% of price)", step=0.01)
+allowShorts = input.bool(true, "Allow shorts")
+longQty     = input.int(100, "Long shares")
+shortQty    = input.int(50, "Short shares (Ron: half size)")
+
+hhmm   = hour(time, tz) * 100 + minute(time, tz)
+orEnd  = 930 + orMinutes                     // valid for 5/15/30 (no hour rollover)
+inOR   = hhmm >= 930 and hhmm < orEnd
+inRTH  = hhmm >= 930 and hhmm < 1600
+
+// ---- session VWAP anchored at 9:30
+var float pv = 0.0
+var float vv = 0.0
+if hhmm == 930
+    pv := 0.0
+    vv := 0.0
+if inRTH
+    pv += hlc3 * volume
+    vv += volume
+vw = vv > 0 ? pv / vv : na
+
+// ---- opening range
+var float orh = na
+var float orl = na
+var bool traded = false
+if hhmm == 930
+    orh := high
+    orl := low
+    traded := false
+else if inOR
+    orh := math.max(orh, high)
+    orl := math.min(orl, low)
+
+orReady  = hhmm >= orEnd and not na(orh)
+canEnter = orReady and hhmm < cutoffHHMM and not traded and strategy.position_size == 0
+longSig  = canEnter and close > orh and close > vw
+shortSig = canEnter and allowShorts and close < orl and close < vw and not longSig
+
+// ---- stop and risk (estimated from the signal close; the order fills at the next open)
+stopFor(isLong) =>
+    lvl = stopMode == "Other side of range" ? (isLong ? orl : orh) : stopMode == "Middle of range" ? (orh + orl) / 2 : vw
+    buf = close * bufferPct / 100
+    isLong ? lvl - buf : lvl + buf
+
+var float stopPx = na
+var float riskPx = na
+var float tgtPx  = na
+var bool halfOff = false
+
+if longSig or shortSig
+    isLong = longSig
+    s = stopFor(isLong)
+    r = isLong ? close - s : s - close
+    rp = r / close * 100
+    traded := true                           // one signal per day, even if skipped (matches engine)
+    if r > 0 and rp <= maxRiskPct and rp >= minRiskPct
+        stopPx := s
+        riskPx := r
+        mult = targetMode == "1R" ? 1.0 : targetMode == "2R" ? 2.0 : targetMode == "Half at 1R, trail VWAP" ? 1.0 : na
+        tgtPx := targetMode == "Range width" ? (isLong ? close + (orh - orl) : close - (orh - orl)) : na(mult) ? na : (isLong ? close + mult * r : close - mult * r)
+        halfOff := false
+        if isLong
+            strategy.entry("L", strategy.long, qty=longQty)
+        else
+            strategy.entry("S", strategy.short, qty=shortQty)
+
+// ---- exits
+pos = strategy.position_size
+if pos != 0
+    isLong = pos > 0
+    id = isLong ? "L" : "S"
+    if targetMode == "Half at 1R, trail VWAP"
+        if not halfOff
+            strategy.exit("half", id, qty_percent=50, limit=tgtPx, stop=stopPx)
+            strategy.exit("rest", id, stop=stopPx)
+            if (isLong and high >= tgtPx) or (not isLong and low <= tgtPx)
+                halfOff := true
+        else
+            be = strategy.position_avg_price
+            strategy.exit("rest", id, stop=be)
+            if (isLong and close < vw) or (not isLong and close > vw)
+                strategy.close(id, comment="VWAP trail")
+    else
+        strategy.exit("x", id, stop=stopPx, limit=tgtPx)
+
+if hhmm >= 1550 and pos != 0
+    strategy.close_all(comment="3:55 PM")
+
+// ---- plots
+plot(orReady or inOR ? orh : na, "Range high", color=color.new(color.green, 0), style=plot.style_linebr)
+plot(orReady or inOR ? orl : na, "Range low", color=color.new(color.red, 0), style=plot.style_linebr)
+plot(inRTH ? vw : na, "VWAP", color=color.new(color.orange, 0), linewidth=2, style=plot.style_linebr)
+plotshape(longSig, "Long signal", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(shortSig, "Short signal", shape.triangledown, location.abovebar, color.red, size=size.small)
+alertcondition(longSig, "ORB long", "SPY ORB-15 + VWAP: LONG signal")
+alertcondition(shortSig, "ORB short", "SPY ORB-15 + VWAP: SHORT signal")

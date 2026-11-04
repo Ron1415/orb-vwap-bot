@@ -1,0 +1,74 @@
+name: SPY ORB VWAP bot
+
+on:
+  schedule:
+    # Every 5 minutes 13:00-16:55 UTC (covers 9:30-11:30 AM ET in both summer and winter time),
+    # then every 15 minutes to 21:45 UTC to follow open trades and run the end-of-day job.
+    - cron: "*/5 13-16 * * 1-5"
+    - cron: "*/15 17-21 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto | backtest | live | eod | report"
+        default: "auto"
+      backtest_days:
+        description: "Sessions to backtest (500 is about 2 years; needs Alpaca keys beyond ~60)"
+        default: "500"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: orb-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/cache@v4
+        with:
+          path: cache
+          key: alpaca-${{ github.run_id }}
+          restore-keys: alpaca-
+      - name: Run
+        env:
+          ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: |
+          MODE="${{ github.event.inputs.mode || 'auto' }}"
+          case "$MODE" in
+            backtest) python run.py --backtest "${{ github.event.inputs.backtest_days || '500' }}" ;;
+            live)     python run.py --live ;;
+            eod)      python run.py --eod ;;
+            report)   python run.py --report ;;
+            *)        python run.py --auto ;;
+          esac
+      - name: Save results
+        run: |
+          git config user.name "orb-bot"
+          git config user.email "orb-bot@users.noreply.github.com"
+          git add -A backtest live || true
+          if ! git diff --cached --quiet; then
+            git commit -m "ORB bot update $(date -u +%F' '%H:%M)"
+            git pull --rebase -X ours || true
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
