@@ -1,12 +1,12 @@
 {
  "date": "2026-11-04",
- "checked": "13:37 ET",
+ "checked": "14:41 ET",
  "source": "Yahoo",
- "bars": 49,
+ "bars": 62,
  "errors": [],
- "last": 768.19,
- "last_bar": "1:30 PM",
- "vwap": 766.51,
+ "last": 767.99,
+ "last_bar": "2:35 PM",
+ "vwap": 766.16,
  "or_high": 767.78,
  "or_low": 762.64,
  "first_candle": "up",
@@ -19,7 +19,7 @@
    "stop": 762.5632,
    "target": 778.9935,
    "exit_reason": "open",
-   "r_net": 0.0237
+   "r_net": -0.0128
   },
   "v2 candle": {
    "status": "LONG signal on the 10:00 AM bar",
@@ -29,7 +29,7 @@
    "stop": 762.5632,
    "target": 778.9935,
    "exit_reason": "open",
-   "r_net": 0.0237
+   "r_net": -0.0128
   },
   "v3 candle + volume": {
    "status": "LONG signal on the 10:00 AM bar: filtered, breakout volume too low"
