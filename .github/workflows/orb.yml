@@ -62,8 +62,10 @@ jobs:
         run: |
           git config user.name "orb-bot"
           git config user.email "orb-bot@users.noreply.github.com"
-          ls -la backtest live 2>/dev/null || echo "No backtest or live files were created"
-          git add -A backtest live || true
+              # both folders must exist, or "git add" refuses the whole command and nothing is saved
+          mkdir -p backtest live
+          ls -la backtest live
+          git add -A backtest live
           if ! git diff --cached --quiet; then
             git commit -m "ORB bot update $(date -u +%F' '%H:%M)"
             git pull --rebase -X ours || true
