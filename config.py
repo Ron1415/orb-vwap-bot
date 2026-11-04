@@ -4,7 +4,10 @@ Times are minutes after midnight, New York time, and refer to the START of a 5-m
 (the bar that starts at 9:45 closes at 9:50).
 """
 
-SYMBOL = "SPY"
+SYMBOL = "SPY"                          # the market reference (calendar, "weak market" context)
+# Ron (November 4, 2026): run on the 10 most traded, diverse ETFs; take every signal (one per ETF per day).
+SYMBOLS = ["SPY", "QQQ", "IWM", "DIA", "XLF", "XLK", "XLE", "SMH", "GLD", "TLT"]
+MAX_TRADES_PER_DAY = None               # None = all signals
 BAR_MINUTES = 5
 
 # ----------------------------------------------------------------- session

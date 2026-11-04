@@ -1,0 +1,214 @@
+//@version=5
+// SPY Opening Range + VWAP bot: OPTIONS TEST VERSION (paper testing only)
+// Chart: SPY, 5-minute, regular trading hours.
+// - Signals and exits are decided on SPY itself (same rules as the GitHub bot, versions v1/v2/v2b/v3).
+// - The Strategy Tester shows SPY share results (100 shares long, 50 short).
+// - The table (top right) ESTIMATES what buying calls (longs) or puts (shorts) would have made,
+//   using Black-Scholes with VIX as the implied volatility. TradingView has no historical option prices,
+//   so this is an estimate, not a fill record.
+// - Alerts send TradersPost-style JSON for options: create ONE alert on this strategy with the
+//   message {{strategy.order.alert_message}} and your webhook URL. Test with a paper account first.
+strategy("SPY ORB + VWAP, options test", overlay=true, initial_capital=25000,
+     default_qty_type=strategy.fixed, default_qty_value=100,
+     commission_type=strategy.commission.cash_per_contract, commission_value=0.0,
+     slippage=1, process_orders_on_close=false, calc_on_every_tick=false)
+
+tz = "America/New_York"
+
+// ---------------------------------------------------------------- inputs
+grpS = "Strategy"
+version    = input.string("v2 candle", "Version", options=["v1 control", "v2 candle", "v2b candle, shorts in weak market", "v3 candle + volume"], group=grpS)
+cutoffHHMM = input.int(1130, "No new signals from (HHMM)", group=grpS)
+targetMode = input.string("2R", "Exit on SPY", options=["2R", "1R", "Hold to 3:55 PM"], group=grpS)
+volMin     = input.float(0.9, "v3: breakout volume vs opening bars", step=0.05, group=grpS)
+
+grpO = "Options (estimate and alerts)"
+dte         = input.int(0, "Days to expiration (0 = same day)", minval=0, maxval=30, group=grpO)
+strikesItm  = input.int(10, "Strikes in the money ($1 strikes)", minval=0, maxval=30, group=grpO)
+contracts   = input.int(1, "Contracts", minval=1, group=grpO)
+vixSym      = input.symbol("TVC:VIX", "Implied volatility source", group=grpO)
+ivMult      = input.float(1.0, "IV multiplier (same-day IV often differs from VIX)", step=0.05, group=grpO)
+spreadCost  = input.float(0.04, "Bid/ask cost per option, round trip ($ per share)", step=0.01, group=grpO)
+commission  = input.float(0.65, "Commission per contract per side ($)", step=0.05, group=grpO)
+ratePct     = input.float(4.0, "Interest rate (%)", step=0.25, group=grpO)
+
+// ---------------------------------------------------------------- version rules
+isV1         = version == "v1 control"
+useCandle    = not isV1
+useVol       = version == "v3 candle + volume"
+shortMode    = isV1 ? "trade" : version == "v2b candle, shorts in weak market" ? "weak" : "watch"
+maxRiskLong  = 1.0
+maxRiskShort = isV1 ? 1.0 : 0.5
+minRiskPct   = 0.05
+bufferPct    = 0.01
+
+// ---------------------------------------------------------------- session, VWAP, opening range
+hhmm    = hour(time, tz) * 100 + minute(time, tz)
+inRTH   = hhmm >= 930 and hhmm < 1600
+isFirst = hhmm == 930
+
+var float pv = 0.0
+var float vv = 0.0
+if isFirst
+    pv := 0.0
+    vv := 0.0
+if inRTH
+    pv += hlc3 * volume
+    vv += volume
+vw = vv > 0 ? pv / vv : na
+
+var float orh = na
+var float orl = na
+var float orOpen = na
+var float orClose = na
+var float orVol = 0.0
+var bool signalSeen = false
+if isFirst
+    orh := high
+    orl := low
+    orOpen := open
+    orClose := na
+    orVol := volume
+    signalSeen := false
+else if hhmm > 930 and hhmm < 945
+    orh := math.max(orh, high)
+    orl := math.min(orl, low)
+    orVol += volume
+if hhmm == 940
+    orClose := close
+
+// SPY's prior daily close vs its 20-day average (no look-ahead: both use the completed prior day)
+prevClose = request.security(syminfo.tickerid, "D", close[1], lookahead=barmerge.lookahead_on)
+sma20Prev = request.security(syminfo.tickerid, "D", ta.sma(close, 20)[1], lookahead=barmerge.lookahead_on)
+spyWeak   = prevClose < sma20Prev
+ivNow     = request.security(vixSym, timeframe.period, close) / 100.0 * ivMult
+
+// ---------------------------------------------------------------- signal (first one each day only)
+orReady  = hhmm >= 945 and not na(orh) and not na(orClose)
+candleUp = orClose >= orOpen
+canLook  = orReady and inRTH and hhmm < cutoffHHMM and not signalSeen and strategy.position_size == 0
+rawLong  = canLook and close > orh and close > vw
+rawShort = canLook and not rawLong and close < orl and close < vw
+volRatio = orVol > 0 ? volume / (orVol / 3.0) : 0.0
+
+buf      = close * bufferPct / 100.0
+stopPx   = rawLong ? orl - buf : orh + buf
+riskPx   = math.abs(close - stopPx)
+riskPct  = riskPx / close * 100.0
+sideOk   = not useCandle or (rawLong == candleUp)
+volOk    = not useVol or volRatio >= volMin
+riskOk   = riskPct >= minRiskPct and riskPct <= (rawLong ? maxRiskLong : maxRiskShort)
+shortOk  = shortMode == "trade" or (shortMode == "weak" and spyWeak)
+
+takeLong   = rawLong and sideOk and volOk and riskOk
+takeShort  = rawShort and sideOk and volOk and riskOk and shortOk
+watchShort = rawShort and sideOk and volOk and riskOk and not shortOk
+
+if rawLong or rawShort
+    signalSeen := true
+
+// ---------------------------------------------------------------- alert messages (TradersPost options format)
+entryMsg(string optType) =>
+    expTxt = dte == 0 ? "0 days" : "+" + str.tostring(dte) + " days"
+    itmTxt = strikesItm > 0 ? ',"intrinsicValue":"itm"' : ""
+    '{"ticker":"' + syminfo.ticker + '","action":"buy","optionType":"' + optType + '","expiration":"' + expTxt +
+     '","strikesAway":' + str.tostring(strikesItm) + itmTxt + ',"quantity":' + str.tostring(contracts) + '}'
+exitMsg = '{"ticker":"' + syminfo.ticker + '","action":"exit"}'
+
+// ---------------------------------------------------------------- orders (decided on SPY)
+var float stopLvl = na
+var float tgtLvl  = na
+var float ivSig   = na
+if takeLong or takeShort
+    stopLvl := stopPx
+    ivSig   := ivNow
+    tgtLvl  := targetMode == "2R" ? (takeLong ? close + 2 * riskPx : close - 2 * riskPx) : targetMode == "1R" ? (takeLong ? close + riskPx : close - riskPx) : na
+    if takeLong
+        strategy.entry("L", strategy.long, qty=100, alert_message=entryMsg("call"))
+        strategy.exit("XL", "L", stop=stopLvl, limit=tgtLvl, alert_message=exitMsg)
+    else
+        strategy.entry("S", strategy.short, qty=50, alert_message=entryMsg("put"))
+        strategy.exit("XS", "S", stop=stopLvl, limit=tgtLvl, alert_message=exitMsg)
+
+if strategy.position_size > 0
+    strategy.exit("XL", "L", stop=stopLvl, limit=tgtLvl, alert_message=exitMsg)
+if strategy.position_size < 0
+    strategy.exit("XS", "S", stop=stopLvl, limit=tgtLvl, alert_message=exitMsg)
+if hhmm >= 1550 and strategy.position_size != 0
+    strategy.close_all(comment="3:55 PM", alert_message=exitMsg)    // fills at the 3:55 open
+
+// ---------------------------------------------------------------- option value estimate (Black-Scholes)
+ncdf(float x) =>
+    k = 1.0 / (1.0 + 0.2316419 * math.abs(x))
+    poly = k * (0.319381530 + k * (-0.356563782 + k * (1.781477937 + k * (-1.821255978 + k * 1.330274429))))
+    c = 1.0 - math.exp(-0.5 * x * x) / math.sqrt(2.0 * math.pi) * poly
+    x >= 0 ? c : 1.0 - c
+
+bsPrice(float S, float K, float T, float iv, bool isCall) =>
+    tt = math.max(T, 1.0 / (252.0 * 390.0))
+    v = math.max(nz(iv, 0.15), 0.01)
+    r = ratePct / 100.0
+    d1 = (math.log(S / K) + (r + v * v / 2.0) * tt) / (v * math.sqrt(tt))
+    d2 = d1 - v * math.sqrt(tt)
+    disc = math.exp(-r * tt)
+    isCall ? S * ncdf(d1) - K * disc * ncdf(d2) : K * disc * ncdf(-d2) - S * ncdf(-d1)
+
+yearsLeft(int minsNow) =>
+    (math.max(960 - minsNow, 1) + dte * 390) / (252.0 * 390.0)
+
+var int   nOpt = 0
+var int   nWin = 0
+var float totOpt = 0.0
+var float peakOpt = 0.0
+var float ddOpt = 0.0
+var float sumRet = 0.0
+var float totShares = 0.0
+var float premSum = 0.0
+
+if strategy.closedtrades > strategy.closedtrades[1]
+    i = strategy.closedtrades - 1
+    S0 = strategy.closedtrades.entry_price(i)
+    S1 = strategy.closedtrades.exit_price(i)
+    isCall = strategy.closedtrades.size(i) > 0
+    t0 = strategy.closedtrades.entry_time(i)
+    t1 = strategy.closedtrades.exit_time(i)
+    m0 = hour(t0, tz) * 60 + minute(t0, tz)
+    m1 = hour(t1, tz) * 60 + minute(t1, tz)
+    K = isCall ? math.round(S0) - strikesItm : math.round(S0) + strikesItm
+    p0 = bsPrice(S0, K, yearsLeft(m0), ivSig, isCall)
+    p1 = bsPrice(S1, K, yearsLeft(m1), ivNow, isCall)
+    pnl = ((p1 - p0) * 100.0 - spreadCost * 100.0 - 2.0 * commission) * contracts
+    nOpt += 1
+    nWin += pnl > 0 ? 1 : 0
+    totOpt += pnl
+    peakOpt := math.max(peakOpt, totOpt)
+    ddOpt := math.min(ddOpt, totOpt - peakOpt)
+    sumRet += pnl / (p0 * 100.0 * contracts)
+    premSum += p0 * 100.0 * contracts
+    totShares += strategy.closedtrades.profit(i)
+
+// ---------------------------------------------------------------- results table
+var table tb = table.new(position.top_right, 2, 10, bgcolor=color.new(color.black, 15), border_width=1)
+cellRow(int r, string k, string v) =>
+    table.cell(tb, 0, r, k, text_color=color.silver, text_size=size.small, text_halign=text.align_left)
+    table.cell(tb, 1, r, v, text_color=color.white, text_size=size.small, text_halign=text.align_right)
+if barstate.islast
+    optName = (strikesItm == 0 ? "ATM" : str.tostring(strikesItm) + " ITM") + ", " + (dte == 0 ? "same day" : str.tostring(dte) + " DTE")
+    cellRow(0, "Version", version)
+    cellRow(1, "Options (estimate)", optName + ", x" + str.tostring(contracts))
+    cellRow(2, "Trades", str.tostring(nOpt))
+    cellRow(3, "Win rate", nOpt > 0 ? str.tostring(100.0 * nWin / nOpt, "#.0") + "%" : "-")
+    cellRow(4, "Options total", "$" + str.tostring(totOpt, "#,###.00"))
+    cellRow(5, "Per trade", nOpt > 0 ? "$" + str.tostring(totOpt / nOpt, "#,###.00") : "-")
+    cellRow(6, "Avg return on premium", nOpt > 0 ? str.tostring(100.0 * sumRet / nOpt, "#.0") + "%" : "-")
+    cellRow(7, "Avg premium paid", nOpt > 0 ? "$" + str.tostring(premSum / nOpt, "#,###") : "-")
+    cellRow(8, "Max drawdown", "$" + str.tostring(ddOpt, "#,###.00"))
+    cellRow(9, "SPY shares total (compare)", "$" + str.tostring(totShares, "#,###.00") + (timeframe.period != "5" ? "  (use a 5-min chart)" : ""))
+
+// ---------------------------------------------------------------- plots
+plot(hhmm >= 930 and inRTH ? orh : na, "Range high", color=color.new(color.blue, 0), style=plot.style_linebr)
+plot(hhmm >= 930 and inRTH ? orl : na, "Range low", color=color.new(color.blue, 0), style=plot.style_linebr)
+plot(inRTH ? vw : na, "VWAP", color=color.new(color.purple, 0), linewidth=2, style=plot.style_linebr)
+plotshape(takeLong, "Call (long)", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(takeShort, "Put (short)", shape.triangledown, location.abovebar, color.red, size=size.small)
+plotshape(watchShort, "Short, watch only", shape.xcross, location.abovebar, color.gray, size=size.tiny)

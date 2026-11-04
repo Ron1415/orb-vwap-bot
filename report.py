@@ -88,30 +88,41 @@ def _table(rows: list, title: str) -> str:
             f"<tbody>{body}</tbody></table></div>")
 
 
+def _short_status(x: dict) -> str:
+    if x.get("side"):
+        return (("watch " if x.get("watch") else "") + f"{x['side']} {x['entry']:.2f} → {x['exit_reason']} {_r(x.get('r_net'))}R")
+    s = x.get("status", "")
+    for a, b in [("Opening range forming", "range forming"), ("Watching for a breakout", "watching"),
+                 ("No breakout before", "no breakout by"), (": filtered, against the first 15-min candle", ": against candle"),
+                 (": filtered, breakout volume too low", ": low volume"), ("signal on the ", ""), (" bar", "")]:
+        s = s.replace(a, b)
+    return s
+
+
 def _today(t: dict) -> str:
     if not t:
         return "<p class='muted'>No live check yet.</p>"
-    kv = [("Range high", t.get("or_high")), ("Range low", t.get("or_low")),
-          ("First 15-min candle", t.get("first_candle")),
-          ("VWAP", t.get("vwap")), ("Last", f"{t.get('last')} ({t.get('last_bar')} bar)" if t.get("last") else None),
-          ("Checked", f"{t.get('date')} {t.get('checked')} via {t.get('source')}")]
-    sts = t.get("strategies") or {}
-    if not sts:
-        kv.insert(0, ("Status", t.get("status")))
-    for name, x in sts.items():
-        txt = x.get("status", "")
-        if x.get("side"):
-            txt = (("WATCH ONLY: " if x.get("watch") else "") + f"{x['side'].upper()} at {x['entry']}, stop {x['stop']}, target {x.get('target') or '3:55 PM'}: "
-                   f"{x['exit_reason']} {_r(x['r_net'])}R")
-        kv.append((name, txt))
-    return "<dl class='kv'>" + "".join(f"<dt>{k}</dt><dd>{html.escape(str(v))}</dd>" for k, v in kv if v is not None) + "</dl>"
+    syms = t.get("symbols")
+    if not syms:                                  # older single-SPY file
+        return f"<p>{html.escape(str(t.get('status', '')))}</p>"
+    names = list(C.STRATEGIES)
+    head = "<th>ETF</th><th>Range</th><th>1st candle</th><th>VWAP</th><th>Last</th>" + "".join(f"<th>{html.escape(n.split(' ')[0])}</th>" for n in names)
+    rows = ""
+    for sym, x in syms.items():
+        st = x.get("strategies") or {}
+        rng = f"{x['or_low']}–{x['or_high']}" if x.get("or_high") else "-"
+        cells = "".join(f"<td>{html.escape(_short_status(st.get(n, {}))) if st else html.escape(x.get('status', ''))}</td>" for n in names)
+        rows += (f"<tr><td><b>{sym}</b></td><td>{rng}</td><td>{x.get('first_candle', '-')}</td><td>{x.get('vwap', '-')}</td>"
+                 f"<td>{x.get('last', '-')}</td>{cells}</tr>")
+    return (f"<p class='muted'>Checked {t.get('date')} {t.get('checked')}. Columns v1, v2, v2b, v3 are the four strategies.</p>"
+            f"<div class='scroll'><table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>")
 
 
 def _paper(trades: list) -> str:
     if not trades:
         return "<p class='muted'>No paper trades yet. Each strategy records the first signal each day that passes its filter.</p>"
     rows = "".join(
-        f"<tr><td>{t['date']}</td><td>{html.escape(t.get('strategy', 'v1 control'))}</td><td>{t['side']}{' (watch)' if t.get('watch') else ''}</td><td>{hhmm(t['signal_min'])}</td><td>{t.get('detected', '-')}</td>"
+        f"<tr><td>{t['date']}</td><td>{t.get('symbol', 'SPY')}</td><td>{html.escape(t.get('strategy', 'v1 control'))}</td><td>{t['side']}{' (watch)' if t.get('watch') else ''}</td><td>{hhmm(t['signal_min'])}</td><td>{t.get('detected', '-')}</td>"
         f"<td>{t['entry']}</td><td>{t['stop']}</td><td>{t.get('target') or '-'}</td><td>{t['exit']}</td><td>{t['exit_reason']}</td>"
         f"<td class='{_cls(t['r_net'])}'>{_r(t['r_net'])}</td></tr>" for t in reversed(trades[-90:]))
     summ = ""
@@ -119,7 +130,7 @@ def _paper(trades: list) -> str:
         st = A.stats([t for t in trades if t["exit_reason"] != "open" and t.get("strategy", "v1 control") == name and not t.get("watch")])
         summ += (f"<p><b>{html.escape(name)}:</b> {st['n']} closed, {st.get('win', 0)}% win, {_r(st.get('avg'))}R per trade.</p>"
                  if st.get("n") else f"<p><b>{html.escape(name)}:</b> no closed trades yet.</p>")
-    return (summ + "<div class='scroll'><table><thead><tr><th>Date</th><th>Strategy</th><th>Side</th><th>Signal bar</th><th>Seen</th><th>Entry</th>"
+    return (summ + "<div class='scroll'><table><thead><tr><th>Date</th><th>ETF</th><th>Strategy</th><th>Side</th><th>Signal bar</th><th>Seen</th><th>Entry</th>"
             "<th>Stop</th><th>Target</th><th>Exit</th><th>How</th><th>R net</th></tr></thead><tbody>" + rows + "</tbody></table></div>")
 
 
@@ -138,6 +149,12 @@ def _strategies(s: dict) -> str:
                     f"{x.get('win', '-')}% win, t {x.get('t') or '-'}</small></td>" if x.get("n") else "<td class='na'>-</td>")
         body += f"<tr><th class='rowh'>{html.escape(name)}</th>{tds}</tr>"
     yrs = "".join(_table(st["by_year"], f"{name}: by year") for name, st in s["strategies"].items())
+    yrs += "".join(_table(st.get("by_symbol_oos") or [], f"{name}: by ETF, out of sample") for name, st in s["strategies"].items())
+    yrs += "".join(_table(st.get("by_symbol") or [], f"{name}: by ETF, all years") for name, st in s["strategies"].items())
+    loads = [(n, st.get("daily_load") or {}) for n, st in s["strategies"].items()]
+    load = "<p class='muted'>Same-day load: " + "; ".join(
+        f"{html.escape(n)} {d.get('avg_trades_per_day', '-')} trades a day on average, up to {d.get('max_trades_per_day', '-')}, "
+        f"worst day {d.get('worst_day_r', '-')}R" for n, d in loads if d) + "</p>"
     w = [(n, st["watch_shorts"], st.get("watch_shorts_oos", {})) for n, st in s["strategies"].items() if st.get("watch_shorts", {}).get("n")]
     watch = ("<p class='muted'>Watch-only shorts (recorded, not counted): " + "; ".join(
         f"{html.escape(n)} {a['n']} trades {_r(a['avg'])}R (out of sample {_r(o.get('avg'))}R, n={o.get('n', 0)})" for n, a, o in w) + "</p>") if w else ""
@@ -146,7 +163,7 @@ def _strategies(s: dict) -> str:
             f"v3 is v2 plus breakout volume of at least {C.VOL_MIN}x. v2, v2b and v3 allow a 1% stop on longs and 0.5% on shorts. "
             "The out-of-sample column is the fair test, because the candle and volume factors were found in the later period.</p>"
             f"<div class='card'><div class='scroll'><table class='grid'><thead><tr><th>Strategy</th>{head}</tr></thead><tbody>{body}</tbody></table></div></div>"
-            f"{watch}<div class='minis'>{yrs}</div>")
+            f"{watch}{load}<div class='minis'>{yrs}</div>")
 
 
 CSS = """
@@ -186,7 +203,7 @@ def build() -> Path:
     today = _j(ROOT / "live" / "today.json", {})
     paper = _j(ROOT / "live" / "paper_trades.json", [])
     rev = (ROOT / "backtest" / "review.md").read_text() if (ROOT / "backtest" / "review.md").exists() else ""
-    parts = [f"<main><h1>SPY Opening Range + VWAP bot</h1><p class='muted'>Testing phase. Paper trades only; no broker connection.</p>",
+    parts = [f"<main><h1>ETF Opening Range + VWAP bot</h1><p class='muted'>Testing phase. Paper trades only; no broker connection. ETFs: {', '.join(C.SYMBOLS)}.</p>",
              "<h2>Today</h2><div class='card'>" + _today(today) + "</div>",
              "<h2>Live paper trades</h2><div class='card'>" + _paper(paper) + "</div>"]
     if s:
@@ -207,7 +224,7 @@ def build() -> Path:
         parts.append("<h2>Review file</h2><pre>" + html.escape(rev) + "</pre>")
     parts.append("</main>")
     page = ("<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-            f"<title>SPY ORB VWAP Bot</title><style>{CSS}</style></head><body>{''.join(parts)}<script>{JS}</script></body></html>")
+            f"<title>ETF ORB VWAP Bot</title><style>{CSS}</style></head><body>{''.join(parts)}<script>{JS}</script></body></html>")
     SITE.mkdir(exist_ok=True)
     (SITE / "index.html").write_text(page)
     for p in [ROOT / "backtest" / "summary.json", ROOT / "live" / "paper_trades.json", ROOT / "live" / "today.json"]:

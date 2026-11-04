@@ -1,7 +1,13 @@
-# SPY Opening Range + VWAP bot (testing phase)
+# ETF Opening Range + VWAP bot (testing phase)
 
 Third strategy, separate from the reversal swing bot and the FVG day-trading scanner.
 Paper trades only; there is no broker connection.
+
+## ETFs (November 4, 2026)
+SPY, QQQ, IWM, DIA, XLF, XLK, XLE, SMH, GLD, TLT (`config.SYMBOLS`): the 10 most traded, diverse ETFs.
+Every signal is taken: one trade per ETF per day, so up to 10 trades a day. Each ETF uses its own
+opening range, VWAP and 20-day average. The backtest reports results by ETF and the same-day load
+(trades a day, worst day in R).
 
 ## Rules (version 1, the baseline)
 1. **Opening range:** high and low of 9:30-9:45 AM ET (three 5-minute bars).

@@ -114,29 +114,28 @@ def yahoo_daily(symbol: str, period="6mo") -> list[dict]:
             for d, h, l, c in zip(df.index, df["High"], df["Low"], df["Close"])]
 
 
-def history(days: int) -> tuple[dict, str]:
+def history(days: int, symbol: str = C.SYMBOL) -> tuple[dict, str]:
     """{date: [Bar]} for about `days` sessions plus DAILY_LOOKBACK days of lead-in, and the source name."""
     today = dt.datetime.now(NY).date()
     start = today - dt.timedelta(days=int(days * 7 / 5) + 10 + C.DAILY_LOOKBACK)
     bars, src = [], ""
     if alpaca_enabled():
-        bars, src = alpaca_bars(C.SYMBOL, start, today), "Alpaca (SIP)"
+        bars, src = alpaca_bars(symbol, start, today), "Alpaca (SIP)"
     if not bars:
-        bars, src = yahoo_bars(C.SYMBOL, "60d"), "Yahoo (about 60 days only)"
+        bars, src = yahoo_bars(symbol, "60d"), "Yahoo (about 60 days only)"
     by_day: dict[str, list] = {}
     for b in bars:
         by_day.setdefault(b.date, []).append(b)
     return by_day, src
 
 
-def today_bars() -> tuple[list, str]:
+def today_bars(symbol: str = C.SYMBOL) -> tuple[list, str]:
     """Today's regular-session 5-minute bars, completed bars only."""
-    today = dt.datetime.now(NY).strftime("%Y-%m-%d")
-    now_min = dt.datetime.now(NY).hour * 60 + dt.datetime.now(NY).minute
-    bars, src = [b for b in yahoo_bars(C.SYMBOL, "1d") if b.date == today], "Yahoo"
+    now = dt.datetime.now(NY)
+    today = now.strftime("%Y-%m-%d")
+    now_min = now.hour * 60 + now.minute
+    bars, src = [b for b in yahoo_bars(symbol, "1d") if b.date == today], "Yahoo"
     if not bars and alpaca_enabled():
         d = dt.date.fromisoformat(today)
-        bars, src = alpaca_bars(C.SYMBOL, d, d, feed="iex"), "Alpaca (IEX)"
-    # drop the bar that is still forming
-    bars = [b for b in bars if b.minute + C.BAR_MINUTES <= now_min]
-    return bars, src
+        bars, src = alpaca_bars(symbol, d, d, feed="iex"), "Alpaca (IEX)"
+    return [b for b in bars if b.minute + C.BAR_MINUTES <= now_min], src

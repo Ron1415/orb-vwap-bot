@@ -27,8 +27,8 @@ def candidates(summary: dict) -> list[dict]:
 
 def backtest_review(s: dict) -> str:
     b = s["baseline"]
-    L = [f"# SPY ORB-15 + VWAP: backtest review", "",
-         f"Generated {s['generated']}. Data: {s['source']}. {s['sessions']} sessions, {s['first']} to {s['last']}. "
+    L = [f"# ETF ORB-15 + VWAP: backtest review", "",
+         f"Generated {s['generated']}. ETFs: {', '.join(s.get('symbols') or [C.SYMBOL])}. Data: {s['source']}. {s['sessions']} sessions, {s['first']} to {s['last']}. "
          f"Results are net of {C.COST_PER_SHARE_PER_SIDE * 100:.0f} cent per share per side.", ""]
     if s.get("errors"):
         L += ["**Data warnings:** " + "; ".join(s["errors"]), ""]
@@ -54,6 +54,13 @@ def backtest_review(s: dict) -> str:
             if st.get("watch_shorts", {}).get("n"):
                 L.append(f"- **{name}, watch-only shorts (not counted):** all {cell(st['watch_shorts'])}; "
                          f"out of sample {cell(st['watch_shorts_oos'])}")
+        for name, st in s["strategies"].items():
+            if st.get("by_symbol_oos"):
+                L.append(f"- **{name} by ETF, out of sample:** " + "; ".join(f"{r['label']} {r.get('avg', 0):+.2f}R (n={r['n']})" for r in st["by_symbol_oos"]))
+            d = st.get("daily_load") or {}
+            if d:
+                L.append(f"- **{name} same-day load:** {d['avg_trades_per_day']} trades a day on average, up to {d['max_trades_per_day']}; "
+                         f"3+ trades on {d['share_days_3plus']}% of trading days; worst day {d['worst_day_r']}R, worst 5% of days {d['worst_5pct_day_r']}R or less")
         for name, st in s["strategies"].items():
             L.append(f"- **{name} by year:** " + "; ".join(f"{r['label']} {r.get('avg', 0):+.2f}R (n={r['n']})" for r in st["by_year"]))
     L += ["", "## Best variant and filter combinations (at least "
@@ -90,7 +97,7 @@ def backtest_review(s: dict) -> str:
 
 def live_review(trades: list[dict]) -> str:
     import analysis as A
-    L = ["# SPY ORB-15 + VWAP: live paper review", ""]
+    L = ["# ETF ORB-15 + VWAP: live paper review", ""]
     closed = [t for t in trades if t.get("exit_reason") not in (None, "open")]
     for name in C.STRATEGIES:
         mine = [t for t in closed if t.get("strategy", "v1 control") == name]

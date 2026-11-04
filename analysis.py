@@ -78,8 +78,26 @@ def buckets(trades: list[dict], feature: str) -> list[dict]:
     return out
 
 
+def daily_load(trades: list[dict]) -> dict:
+    """How trades stack up on the same day (all ETFs together): counts and the day's total R (size-weighted)."""
+    days: dict = {}
+    for t in trades:
+        d = days.setdefault(t["date"], [0, 0.0])
+        d[0] += 1
+        d[1] += t["r_sized"]
+    if not days:
+        return {}
+    counts = [v[0] for v in days.values()]
+    totals = sorted(v[1] for v in days.values())
+    return {"days_with_trades": len(days), "avg_trades_per_day": round(sum(counts) / len(days), 2),
+            "max_trades_per_day": max(counts), "share_days_3plus": round(sum(c >= 3 for c in counts) / len(days) * 100, 1),
+            "worst_day_r": round(totals[0], 2), "best_day_r": round(totals[-1], 2),
+            "worst_5pct_day_r": round(totals[max(0, int(len(totals) * 0.05) - 1)], 2)}
+
+
 def breakdowns(trades: list[dict]) -> dict:
     out = {
+        "ETF": by_key(trades, lambda t: t.get("symbol", C.SYMBOL), C.SYMBOLS),
         "Side": by_key(trades, lambda t: t["side"], ["long", "short"]),
         "Exit": by_key(trades, lambda t: t["exit_reason"]),
         "Signal hour": by_key(trades, lambda t: hhmm(t["signal_min"] // 30 * 30)),

@@ -37,38 +37,66 @@ def variants() -> dict[str, dict]:
     return out
 
 
-def run_days(by_day: dict, dates: list[str], rules: dict, daily: list[dict]) -> tuple[list, dict]:
+def _status_key(tr, st: str) -> str:
+    return "trade" if tr else ("skipped: " + st.split("skipped, ")[1] if "skipped, " in st
+                               else "no breakout before cutoff" if st.startswith("No breakout")
+                               else "no bar to enter" if "no bar to enter" in st else st)
+
+
+def _sorted(trades: list) -> list:
+    return sorted(trades, key=lambda t: (t["date"], t["signal_min"], t["symbol"]))
+
+
+def run_days(market: dict, dates: list[str], fn) -> tuple[list, dict]:
+    """fn(bars, ctx) -> (trade, status) for every ETF on every date (one trade per ETF per day)."""
     trades, status = [], {}
-    for d in dates:
-        ctx = E.daily_context(daily, d)
-        tr, st = E.run_day(by_day[d], ctx, rules)
-        key = "trade" if tr else ("skipped: " + st.split("skipped, ")[1] if "skipped, " in st
-                                   else "no breakout before cutoff" if st.startswith("No breakout")
-                                   else "no bar to enter" if "no bar to enter" in st else st)
-        status[key] = status.get(key, 0) + 1
-        if tr:
-            tr["date"] = d
-            trades.append(tr)
-    return trades, status
+    for sym, m in market.items():
+        for d in dates:
+            if d not in m["by_day"]:
+                continue
+            tr, st = fn(m["by_day"][d], E.daily_context(m["daily"], d))
+            key = _status_key(tr, st)
+            status[key] = status.get(key, 0) + 1
+            if tr:
+                tr["date"], tr["symbol"] = d, sym
+                trades.append(tr)
+    return _sorted(trades), status
 
 
-def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "") -> dict:
-    if by_day is None:
-        by_day, source = data.history(days)
-    daily = E.daily_from_intraday(by_day)
-    full = [d for d in sorted(by_day) if len(E.rth(by_day[d])) >= 60]       # skip half days
+def load_market(days: int) -> tuple[dict, str]:
+    market, sources = {}, set()
+    for sym in C.SYMBOLS:
+        by_day, src = data.history(days, sym)
+        if by_day:
+            market[sym] = {"by_day": by_day}
+            sources.add(src)
+        else:
+            log.warning("No data for %s", sym)
+    return market, ", ".join(sorted(sources))
+
+
+def run(days: int = C.BACKTEST_DAYS, market: dict | None = None, source: str = "", by_day: dict | None = None) -> dict:
+    if by_day is not None:                      # single-symbol call (tests)
+        market = {C.SYMBOL: {"by_day": by_day}}
+    if market is None:
+        market, source = load_market(days)
+    for m in market.values():
+        m["daily"] = E.daily_from_intraday(m["by_day"])
+    ref = market.get(C.SYMBOL) or next(iter(market.values()))
+    full = [d for d in sorted(ref["by_day"]) if len(E.rth(ref["by_day"][d])) >= 60]       # skip half days
     # the first DAILY_LOOKBACK calendar days only feed the 20/50-day context
     lead = (dt.date.fromisoformat(full[0]) + dt.timedelta(days=C.DAILY_LOOKBACK)).isoformat() if full else ""
     dates = [d for d in full if d >= lead] if len(full) > 120 else full
     dates = dates[-days:]
     recent = dates[-C.RECENT_DAYS:]
-    log.info("%d sessions %s to %s from %s", len(dates), dates[0] if dates else "-", dates[-1] if dates else "-", source)
+    log.info("%d sessions %s to %s, %d ETFs, from %s", len(dates), dates[0] if dates else "-",
+             dates[-1] if dates else "-", len(market), source)
 
     OUT.mkdir(exist_ok=True)
     rows, grid = [], []
     base_trades, base_status = [], {}
     for name, rules in variants().items():
-        trades, status = run_days(by_day, dates, rules, daily)
+        trades, status = run_days(market, dates, lambda bars, ctx, r=rules: E.run_day(bars, ctx, r))
         if name == "Baseline":
             base_trades, base_status = trades, status
         for t in trades:
@@ -91,12 +119,7 @@ def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "
     oos_dates = [d for d in dates if d < cut]
     ins_dates = [d for d in dates if d >= cut]
     for name in C.STRATEGIES:
-        trades = []
-        for d in dates:
-            tr, _ = E.run_strategy(by_day[d], E.daily_context(daily, d), name)
-            if tr:
-                tr["date"] = d
-                trades.append(tr)
+        trades, _ = run_days(market, dates, lambda bars, ctx, n=name: E.run_strategy(bars, ctx, n))
         for t in trades:
             rows.append({"variant": f"Strategy: {name}", **t})
         watch = [t for t in trades if t.get("watch")]
@@ -110,13 +133,16 @@ def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "
             "recent": A.stats([t for t in trades if recent and t["date"] >= recent[0]], len(recent)),
             "by_year": A.by_key(trades, lambda t: t["date"][:4]),
             "by_side": A.by_key(trades, lambda t: t["side"], ["long", "short"]),
+            "by_symbol": A.by_key(trades, lambda t: t["symbol"], [s for s in C.SYMBOLS if s in market]),
+            "by_symbol_oos": A.by_key([t for t in trades if t["date"] < cut], lambda t: t["symbol"], [s for s in C.SYMBOLS if s in market]),
+            "daily_load": A.daily_load(trades),
             "equity": A.equity(trades),
         }
 
     rec_base = [t for t in base_trades if recent and t["date"] >= recent[0]]
     summary = {
         "generated": dt.datetime.now(data.NY).strftime("%Y-%m-%d %H:%M ET"),
-        "source": source, "errors": data.ERRORS[:5],
+        "source": source, "errors": data.ERRORS[:5], "symbols": [s for s in C.SYMBOLS if s in market],
         "sessions": len(dates), "first": dates[0] if dates else None, "last": dates[-1] if dates else None,
         "recent_first": recent[0] if recent else None,
         "rules": C.RULES, "cost_per_share_per_side": C.COST_PER_SHARE_PER_SIDE,
