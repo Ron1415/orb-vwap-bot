@@ -85,7 +85,7 @@ def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "
             cells[fname] = st
         grid.append({"variant": name, "rules": {k: rules[k] for k in ("or_minutes", "entry", "entry_cutoff", "stop", "target")}, "cells": cells})
 
-    # ---- the three strategies paper traded side by side (v1 control, v2 candle, v3 candle + volume)
+    # ---- the strategies paper traded side by side (config.STRATEGIES); watch-only shorts reported apart
     strategies = {}
     cut = C.FACTORS_FOUND_FROM
     oos_dates = [d for d in dates if d < cut]
@@ -99,7 +99,11 @@ def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "
                 trades.append(tr)
         for t in trades:
             rows.append({"variant": f"Strategy: {name}", **t})
+        watch = [t for t in trades if t.get("watch")]
+        trades = [t for t in trades if not t.get("watch")]
         strategies[name] = {
+            "watch_shorts": A.stats(watch, len(dates)),
+            "watch_shorts_oos": A.stats([t for t in watch if t["date"] < cut], len(oos_dates)),
             "all": A.stats(trades, len(dates)),
             "out_of_sample": A.stats([t for t in trades if t["date"] < cut], len(oos_dates)),
             "in_sample": A.stats([t for t in trades if t["date"] >= cut], len(ins_dates)),

@@ -134,8 +134,24 @@ def test_strategies_and_side_risk():
     print("strategies + side risk ok")
 
 
+def test_short_modes():
+    # first candle DOWN, breakdown short with risk about 0.36% (passes the 0.5% short cap)
+    bars = mk([(99.9, 99.95, 99.75, 99.8), (99.8, 99.9, 99.72, 99.78), (99.78, 99.85, 99.7, 99.75),
+               (99.75, 99.76, 99.55, 99.6), (99.6, 99.65, 99.5, 99.55)] + [(99.55, 99.6, 99.5, 99.55)] * 75)
+    up_trend = {"prev_close": 100.0, "sma20": 99.0}      # SPY above its 20-day average
+    down_trend = {"prev_close": 100.0, "sma20": 101.0}   # SPY below it
+    v1, _ = E.run_strategy(bars, up_trend, "v1 control")
+    v2, st2 = E.run_strategy(bars, up_trend, "v2 candle")
+    b_up, st_up = E.run_strategy(bars, up_trend, "v2b candle, shorts in weak market")
+    b_dn, _ = E.run_strategy(bars, down_trend, "v2b candle, shorts in weak market")
+    assert v1["side"] == "short" and not v1["watch"] and v1["r_sized"] != 0
+    assert v2["watch"] and v2["r_sized"] == 0 and "watch only" in st2, st2
+    assert b_up["watch"] and "20-day" in st_up and not b_dn["watch"] and b_dn["r_sized"] != 0
+    print("short modes ok")
+
+
 if __name__ == "__main__":
     for f in [test_long_target, test_short_needs_vwap, test_stop_first_and_size, test_cutoff_and_eod,
-              test_half_trail, test_next_bar_risk_skip, test_strategies_and_side_risk, test_random_sanity]:
+              test_half_trail, test_next_bar_risk_skip, test_strategies_and_side_risk, test_short_modes, test_random_sanity]:
         f()
     print("ALL TESTS PASSED")

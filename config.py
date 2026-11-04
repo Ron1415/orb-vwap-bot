@@ -41,10 +41,14 @@ RULES = {
 # Each day only the FIRST signal counts; if it fails a filter, that strategy does not trade that day.
 SIDE_RISK = {"max_risk_pct_long": 1.0, "max_risk_pct_short": 0.5}
 VOL_MIN = 0.9                           # set before any out-of-sample check (the in-sample quartile cut was 0.94)
+# "shorts": how each strategy handles short signals (Ron approved, November 4, 2026, after the 5-year backtest):
+#   "trade" = paper traded; "watch" = recorded and followed but not counted (size 0);
+#   "below_sma20" = traded only when SPY's prior close is below its 20-day average, otherwise watch only.
 STRATEGIES = {
-    "v1 control": {"rules": {}, "filter": None},
-    "v2 candle": {"rules": SIDE_RISK, "filter": "candle"},
-    "v3 candle + volume": {"rules": SIDE_RISK, "filter": "candle_vol"},
+    "v1 control": {"rules": {}, "filter": None, "shorts": "trade"},
+    "v2 candle": {"rules": SIDE_RISK, "filter": "candle", "shorts": "watch"},
+    "v2b candle, shorts in weak market": {"rules": SIDE_RISK, "filter": "candle", "shorts": "below_sma20"},
+    "v3 candle + volume": {"rules": SIDE_RISK, "filter": "candle_vol", "shorts": "watch"},
 }
 STRATEGY_FILTERS = {
     None: lambda f: True,

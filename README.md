@@ -14,12 +14,14 @@ Paper trades only; there is no broker connection.
 8. **Costs:** 1 cent per share per side; every headline result is net of costs.
 
 ## Paper-traded strategies (approved November 4, 2026)
-| Strategy | Rule | Risk limit |
-|---|---|---|
-| v1 control | The original rules above, unchanged | 1% both sides |
-| v2 candle | Trade only in the direction of the first 15-minute candle (9:30-9:45 close vs open) | longs 1%, shorts 0.5% |
-| v3 candle + volume | v2, and the breakout bar's volume is at least 0.9x the average opening-range bar | longs 1%, shorts 0.5% |
+| Strategy | Rule | Shorts | Risk limit |
+|---|---|---|---|
+| v1 control | The original rules above, unchanged | traded | 1% both sides |
+| v2 candle | Trade only in the direction of the first 15-minute candle | watch only | longs 1%, shorts 0.5% |
+| v2b candle, shorts in weak market | v2, but shorts are traded when SPY's prior close is below its 20-day average | below 20-day only | longs 1%, shorts 0.5% |
+| v3 candle + volume | v2, and breakout-bar volume at least 0.9x the average opening-range bar | watch only | longs 1%, shorts 0.5% |
 
+Watch-only shorts are recorded and followed with the same rules but are not counted (size 0), so they can be reviewed later.
 Only the day's first signal counts; if it fails a strategy's filter, that strategy does not trade that day.
 The backtest covers about 5 years (1250 sessions). Sessions before November 25, 2024 are reported separately
 as out of sample, because the candle and volume factors were found in the later period.

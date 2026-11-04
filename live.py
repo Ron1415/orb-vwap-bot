@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent
 LIVE = ROOT / "live"
 TRADES = LIVE / "paper_trades.json"
 TODAY = LIVE / "today.json"
-FIELDS = ("strategy", "side", "entry", "stop", "target", "exit_reason", "r_net")
+FIELDS = ("strategy", "side", "entry", "stop", "target", "exit_reason", "r_net", "watch")
 
 
 def _load() -> list:

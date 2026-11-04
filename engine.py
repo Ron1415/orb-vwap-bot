@@ -253,10 +253,19 @@ def daily_from_intraday(by_day: dict) -> list[dict]:
 
 
 def run_strategy(bars: list, ctx: dict, name: str) -> tuple[dict | None, str]:
-    """One of config.STRATEGIES for one session: its rules, then its filter on the day's first signal."""
+    """One of config.STRATEGIES for one session: its rules, its filter on the day's first signal,
+    then its short-side rule. A watch-only short comes back with tr["watch"] = True (not a trade)."""
     st = C.STRATEGIES[name]
     tr, status = run_day(bars, ctx, dict(C.RULES, **st["rules"]))
     if tr and not C.STRATEGY_FILTERS[st["filter"]](tr):
         why = "against the first 15-min candle" if (tr["side"] == "long") != tr["or_candle_up"] else "breakout volume too low"
         return None, f"{status}: filtered, {why}"
+    if tr:
+        tr["watch"] = False
+        mode = st.get("shorts", "trade")
+        if tr["side"] == "short" and (mode == "watch" or (mode == "below_sma20" and tr["above_sma20"])):
+            tr["watch"] = True
+            tr["r_sized"] = 0.0
+            status += (": short recorded as watch only" if mode == "watch"
+                       else ": short recorded as watch only (SPY above its 20-day average)")
     return tr, status
