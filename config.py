@@ -6,7 +6,11 @@ Times are minutes after midnight, New York time, and refer to the START of a 5-m
 
 SYMBOL = "SPY"                          # the market reference (calendar, "weak market" context)
 # Ron (November 4, 2026): run on the 10 most traded, diverse ETFs; take every signal (one per ETF per day).
-SYMBOLS = ["SPY", "QQQ", "IWM", "DIA", "XLF", "XLK", "XLE", "SMH", "GLD", "TLT"]
+# Nov 4 (after the 10-ETF backtest, Ron approved): trade only SPY, QQQ, XLK and SMH; IWM and DIA are
+# recorded as watch only; XLF, XLE, GLD and TLT were dropped (negative in every year).
+SYMBOLS = ["SPY", "QQQ", "XLK", "SMH", "IWM", "DIA"]
+WATCH_SYMBOLS = ["IWM", "DIA"]          # followed with the same rules, never counted (size 0)
+MAIN_STRATEGY = "v2 candle"             # the main candidate: longs only, with the first 15-minute candle
 MAX_TRADES_PER_DAY = None               # None = all signals
 BAR_MINUTES = 5
 

@@ -269,3 +269,11 @@ def run_strategy(bars: list, ctx: dict, name: str) -> tuple[dict | None, str]:
             status += (": short recorded as watch only" if mode == "watch"
                        else ": short recorded as watch only (SPY above its 20-day average)")
     return tr, status
+
+
+def mark_watch_symbol(tr: dict | None, symbol: str, status: str) -> tuple[dict | None, str]:
+    """ETFs in config.WATCH_SYMBOLS are followed but never counted."""
+    if tr and symbol in C.WATCH_SYMBOLS:
+        tr["watch"], tr["r_sized"] = True, 0.0
+        status += " (watch-only ETF)"
+    return tr, status

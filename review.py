@@ -28,7 +28,7 @@ def candidates(summary: dict) -> list[dict]:
 def backtest_review(s: dict) -> str:
     b = s["baseline"]
     L = [f"# ETF ORB-15 + VWAP: backtest review", "",
-         f"Generated {s['generated']}. ETFs: {', '.join(s.get('symbols') or [C.SYMBOL])}. Data: {s['source']}. {s['sessions']} sessions, {s['first']} to {s['last']}. "
+         f"Generated {s['generated']}. ETFs traded: {', '.join(s.get('symbols') or [C.SYMBOL])}; watch only: {', '.join(s.get('watch_symbols') or []) or 'none'}. Main candidate: {s.get('main_strategy', '-')}. Data: {s['source']}. {s['sessions']} sessions, {s['first']} to {s['last']}. "
          f"Results are net of {C.COST_PER_SHARE_PER_SIDE * 100:.0f} cent per share per side.", ""]
     if s.get("errors"):
         L += ["**Data warnings:** " + "; ".join(s["errors"]), ""]
@@ -54,6 +54,9 @@ def backtest_review(s: dict) -> str:
             if st.get("watch_shorts", {}).get("n"):
                 L.append(f"- **{name}, watch-only shorts (not counted):** all {cell(st['watch_shorts'])}; "
                          f"out of sample {cell(st['watch_shorts_oos'])}")
+        for name, st in s["strategies"].items():
+            if st.get("watch_symbols", {}).get("n"):
+                L.append(f"- **{name}, watch-only ETFs {', '.join(s.get('watch_symbols') or [])} (not counted):** {cell(st['watch_symbols'])}")
         for name, st in s["strategies"].items():
             if st.get("by_symbol_oos"):
                 L.append(f"- **{name} by ETF, out of sample:** " + "; ".join(f"{r['label']} {r.get('avg', 0):+.2f}R (n={r['n']})" for r in st["by_symbol_oos"]))

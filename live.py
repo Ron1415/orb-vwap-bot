@@ -57,6 +57,7 @@ def _scan_symbol(sym: str, trades: list, date: str, now, final: bool) -> dict:
     info["strategies"] = {}
     for name in C.STRATEGIES:
         tr, status = E.run_strategy(bars, ctx, name)
+        tr, status = E.mark_watch_symbol(tr, sym, status)
         rec = next((t for t in trades if t["date"] == date and t["strategy"] == name and t["symbol"] == sym), None)
         if tr:
             tr.update({"date": date, "strategy": name, "symbol": sym})

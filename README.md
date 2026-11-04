@@ -4,10 +4,10 @@ Third strategy, separate from the reversal swing bot and the FVG day-trading sca
 Paper trades only; there is no broker connection.
 
 ## ETFs (November 4, 2026)
-SPY, QQQ, IWM, DIA, XLF, XLK, XLE, SMH, GLD, TLT (`config.SYMBOLS`): the 10 most traded, diverse ETFs.
-Every signal is taken: one trade per ETF per day, so up to 10 trades a day. Each ETF uses its own
-opening range, VWAP and 20-day average. The backtest reports results by ETF and the same-day load
-(trades a day, worst day in R).
+Traded: SPY, QQQ, XLK, SMH. Watch only (followed, never counted): IWM, DIA (`config.WATCH_SYMBOLS`).
+XLF, XLE, GLD and TLT were dropped after the 5-year 10-ETF backtest (negative in every year).
+Every signal is taken: one trade per ETF per day. Each ETF uses its own opening range, VWAP and 20-day average.
+Main candidate: v2 candle, longs only (`config.MAIN_STRATEGY`).
 
 ## Rules (version 1, the baseline)
 1. **Opening range:** high and low of 9:30-9:45 AM ET (three 5-minute bars).

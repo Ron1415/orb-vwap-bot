@@ -96,7 +96,8 @@ def run(days: int = C.BACKTEST_DAYS, market: dict | None = None, source: str = "
     rows, grid = [], []
     base_trades, base_status = [], {}
     for name, rules in variants().items():
-        trades, status = run_days(market, dates, lambda bars, ctx, r=rules: E.run_day(bars, ctx, r))
+        traded = {s: m for s, m in market.items() if s not in C.WATCH_SYMBOLS}
+        trades, status = run_days(traded, dates, lambda bars, ctx, r=rules: E.run_day(bars, ctx, r))
         if name == "Baseline":
             base_trades, base_status = trades, status
         for t in trades:
@@ -122,7 +123,13 @@ def run(days: int = C.BACKTEST_DAYS, market: dict | None = None, source: str = "
         trades, _ = run_days(market, dates, lambda bars, ctx, n=name: E.run_strategy(bars, ctx, n))
         for t in trades:
             rows.append({"variant": f"Strategy: {name}", **t})
-        watch = [t for t in trades if t.get("watch")]
+        short_watch = {id(t) for t in trades if t.get("watch")}          # watch-only by the short rule
+        for t in trades:
+            E.mark_watch_symbol(t, t["symbol"], "")
+        watch_sym = [t for t in trades if t["symbol"] in C.WATCH_SYMBOLS and id(t) not in short_watch]
+        watch = [t for t in trades if id(t) in short_watch and t["symbol"] not in C.WATCH_SYMBOLS]
+        ws_ids = {id(t) for t in watch_sym}
+        by_sym_all = [t for t in trades if not t.get("watch") or id(t) in ws_ids]
         trades = [t for t in trades if not t.get("watch")]
         strategies[name] = {
             "watch_shorts": A.stats(watch, len(dates)),
@@ -133,8 +140,9 @@ def run(days: int = C.BACKTEST_DAYS, market: dict | None = None, source: str = "
             "recent": A.stats([t for t in trades if recent and t["date"] >= recent[0]], len(recent)),
             "by_year": A.by_key(trades, lambda t: t["date"][:4]),
             "by_side": A.by_key(trades, lambda t: t["side"], ["long", "short"]),
-            "by_symbol": A.by_key(trades, lambda t: t["symbol"], [s for s in C.SYMBOLS if s in market]),
-            "by_symbol_oos": A.by_key([t for t in trades if t["date"] < cut], lambda t: t["symbol"], [s for s in C.SYMBOLS if s in market]),
+            "watch_symbols": A.stats(watch_sym, len(dates)),
+            "by_symbol": A.by_key(by_sym_all, lambda t: t["symbol"] + (" (watch)" if t["symbol"] in C.WATCH_SYMBOLS else "")),
+            "by_symbol_oos": A.by_key([t for t in by_sym_all if t["date"] < cut], lambda t: t["symbol"] + (" (watch)" if t["symbol"] in C.WATCH_SYMBOLS else "")),
             "daily_load": A.daily_load(trades),
             "equity": A.equity(trades),
         }
@@ -142,7 +150,8 @@ def run(days: int = C.BACKTEST_DAYS, market: dict | None = None, source: str = "
     rec_base = [t for t in base_trades if recent and t["date"] >= recent[0]]
     summary = {
         "generated": dt.datetime.now(data.NY).strftime("%Y-%m-%d %H:%M ET"),
-        "source": source, "errors": data.ERRORS[:5], "symbols": [s for s in C.SYMBOLS if s in market],
+        "source": source, "errors": data.ERRORS[:5], "symbols": [s for s in C.SYMBOLS if s in market and s not in C.WATCH_SYMBOLS],
+        "watch_symbols": [s for s in C.WATCH_SYMBOLS if s in market], "main_strategy": C.MAIN_STRATEGY,
         "sessions": len(dates), "first": dates[0] if dates else None, "last": dates[-1] if dates else None,
         "recent_first": recent[0] if recent else None,
         "rules": C.RULES, "cost_per_share_per_side": C.COST_PER_SHARE_PER_SIDE,

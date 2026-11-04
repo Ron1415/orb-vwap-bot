@@ -150,8 +150,17 @@ def test_short_modes():
     print("short modes ok")
 
 
+def test_watch_symbol():
+    bars = mk(OR + [(100.5, 100.9, 100.4, 100.85)] + [FLAT] * 75)
+    tr, st = E.run_strategy(bars, {}, "v1 control")
+    w, st2 = E.mark_watch_symbol(dict(tr), "IWM", st)
+    k, _ = E.mark_watch_symbol(dict(tr), "SPY", st)
+    assert w["watch"] and w["r_sized"] == 0 and "watch-only ETF" in st2 and not k["watch"]
+    print("watch ETF ok")
+
+
 if __name__ == "__main__":
     for f in [test_long_target, test_short_needs_vwap, test_stop_first_and_size, test_cutoff_and_eod,
-              test_half_trail, test_next_bar_risk_skip, test_strategies_and_side_risk, test_short_modes, test_random_sanity]:
+              test_half_trail, test_next_bar_risk_skip, test_strategies_and_side_risk, test_short_modes, test_watch_symbol, test_random_sanity]:
         f()
     print("ALL TESTS PASSED")

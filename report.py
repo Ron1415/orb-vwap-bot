@@ -112,7 +112,7 @@ def _today(t: dict) -> str:
         st = x.get("strategies") or {}
         rng = f"{x['or_low']}–{x['or_high']}" if x.get("or_high") else "-"
         cells = "".join(f"<td>{html.escape(_short_status(st.get(n, {}))) if st else html.escape(x.get('status', ''))}</td>" for n in names)
-        rows += (f"<tr><td><b>{sym}</b></td><td>{rng}</td><td>{x.get('first_candle', '-')}</td><td>{x.get('vwap', '-')}</td>"
+        rows += (f"<tr><td><b>{sym}</b>{' <small>(watch)</small>' if sym in C.WATCH_SYMBOLS else ''}</td><td>{rng}</td><td>{x.get('first_candle', '-')}</td><td>{x.get('vwap', '-')}</td>"
                  f"<td>{x.get('last', '-')}</td>{cells}</tr>")
     return (f"<p class='muted'>Checked {t.get('date')} {t.get('checked')}. Columns v1, v2, v2b, v3 are the four strategies.</p>"
             f"<div class='scroll'><table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>")
@@ -155,6 +155,9 @@ def _strategies(s: dict) -> str:
     load = "<p class='muted'>Same-day load: " + "; ".join(
         f"{html.escape(n)} {d.get('avg_trades_per_day', '-')} trades a day on average, up to {d.get('max_trades_per_day', '-')}, "
         f"worst day {d.get('worst_day_r', '-')}R" for n, d in loads if d) + "</p>"
+    ws = [(n, st["watch_symbols"]) for n, st in s["strategies"].items() if st.get("watch_symbols", {}).get("n")]
+    wsym = ("<p class='muted'>Watch-only ETFs (" + html.escape(", ".join(s.get("watch_symbols") or [])) + "), not counted: " + "; ".join(
+        f"{html.escape(n)} {a['n']} trades {_r(a['avg'])}R" for n, a in ws) + "</p>") if ws else ""
     w = [(n, st["watch_shorts"], st.get("watch_shorts_oos", {})) for n, st in s["strategies"].items() if st.get("watch_shorts", {}).get("n")]
     watch = ("<p class='muted'>Watch-only shorts (recorded, not counted): " + "; ".join(
         f"{html.escape(n)} {a['n']} trades {_r(a['avg'])}R (out of sample {_r(o.get('avg'))}R, n={o.get('n', 0)})" for n, a, o in w) + "</p>") if w else ""
@@ -163,7 +166,7 @@ def _strategies(s: dict) -> str:
             f"v3 is v2 plus breakout volume of at least {C.VOL_MIN}x. v2, v2b and v3 allow a 1% stop on longs and 0.5% on shorts. "
             "The out-of-sample column is the fair test, because the candle and volume factors were found in the later period.</p>"
             f"<div class='card'><div class='scroll'><table class='grid'><thead><tr><th>Strategy</th>{head}</tr></thead><tbody>{body}</tbody></table></div></div>"
-            f"{watch}{load}<div class='minis'>{yrs}</div>")
+            f"{watch}{wsym}{load}<div class='minis'>{yrs}</div>")
 
 
 CSS = """
@@ -203,7 +206,7 @@ def build() -> Path:
     today = _j(ROOT / "live" / "today.json", {})
     paper = _j(ROOT / "live" / "paper_trades.json", [])
     rev = (ROOT / "backtest" / "review.md").read_text() if (ROOT / "backtest" / "review.md").exists() else ""
-    parts = [f"<main><h1>ETF Opening Range + VWAP bot</h1><p class='muted'>Testing phase. Paper trades only; no broker connection. ETFs: {', '.join(C.SYMBOLS)}.</p>",
+    parts = [f"<main><h1>ETF Opening Range + VWAP bot</h1><p class='muted'>Testing phase. Paper trades only; no broker connection. ETFs traded: {', '.join(s for s in C.SYMBOLS if s not in C.WATCH_SYMBOLS)}; watch only: {', '.join(C.WATCH_SYMBOLS)}. Main candidate: {C.MAIN_STRATEGY} (longs).</p>",
              "<h2>Today</h2><div class='card'>" + _today(today) + "</div>",
              "<h2>Live paper trades</h2><div class='card'>" + _paper(paper) + "</div>"]
     if s:
