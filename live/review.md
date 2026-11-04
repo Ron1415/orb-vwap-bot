@@ -1,10 +1,11 @@
 # ETF ORB-15 + VWAP: live paper review
 
-- **v1 control:** 6 trades, 33.3% win, -0.37R ±0.35 per trade, profit factor 0.35, max drawdown -1.56R
-- **v2 candle:** 2 trades, 50.0% win, +0.37R ±0.68 per trade, profit factor 3.36, max drawdown -0.31R
-  - watch-only shorts (not counted): 1 trades, 0.0% win, -1.07R per trade, max drawdown 0.0R
-- **v2b candle, shorts in weak market:** 2 trades, 50.0% win, +0.37R ±0.68 per trade, profit factor 3.36, max drawdown -0.31R
-  - watch-only shorts (not counted): 1 trades, 0.0% win, -1.07R per trade, max drawdown 0.0R
+- **v1 control:** 4 trades, 0.0% win, -0.86R ±0.18 per trade, max drawdown -1.87R
+  - watch-only shorts (not counted): 2 trades, 100.0% win, +0.60R ±0.44 per trade, max drawdown 0.0R
+- **v2 candle:** 1 trades, 0.0% win, -0.31R per trade, max drawdown -0.31R
+  - watch-only shorts (not counted): 2 trades, 50.0% win, -0.01R ±1.05 per trade, profit factor 0.98, max drawdown 0.0R
+- **v2b candle, shorts in weak market:** 1 trades, 0.0% win, -0.31R per trade, max drawdown -0.31R
+  - watch-only shorts (not counted): 2 trades, 50.0% win, -0.01R ±1.05 per trade, profit factor 0.98, max drawdown 0.0R
 - **v3 candle + volume:** no trades
   - watch-only shorts (not counted): 1 trades, 0.0% win, -1.07R per trade, max drawdown 0.0R
 
