@@ -1,0 +1,39 @@
+{
+ "date": "2026-11-04",
+ "checked": "13:37 ET",
+ "source": "Yahoo",
+ "bars": 49,
+ "errors": [],
+ "last": 768.19,
+ "last_bar": "1:30 PM",
+ "vwap": 766.51,
+ "or_high": 767.78,
+ "or_low": 762.64,
+ "first_candle": "up",
+ "strategies": {
+  "v1 control": {
+   "status": "LONG signal on the 10:00 AM bar",
+   "strategy": "v1 control",
+   "side": "long",
+   "entry": 768.04,
+   "stop": 762.5632,
+   "target": 778.9935,
+   "exit_reason": "open",
+   "r_net": 0.0237
+  },
+  "v2 candle": {
+   "status": "LONG signal on the 10:00 AM bar",
+   "strategy": "v2 candle",
+   "side": "long",
+   "entry": 768.04,
+   "stop": 762.5632,
+   "target": 778.9935,
+   "exit_reason": "open",
+   "r_net": 0.0237
+  },
+  "v3 candle + volume": {
+   "status": "LONG signal on the 10:00 AM bar: filtered, breakout volume too low"
+  }
+ },
+ "status": "LONG signal on the 10:00 AM bar"
+}
