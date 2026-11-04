@@ -108,7 +108,7 @@ def simulate(bars: list, sig: dict, rules: dict, vw: list | None = None) -> dict
     if risk <= 0:
         return {"skip": "entry beyond stop"}
     risk_pct = risk / entry * 100
-    if risk_pct > rules["max_risk_pct"]:
+    if risk_pct > rules.get(f"max_risk_pct_{sig['side']}", rules["max_risk_pct"]):
         return {"skip": "risk too large"}
     if risk_pct < rules["min_risk_pct"]:
         return {"skip": "risk too small"}
@@ -250,3 +250,13 @@ def daily_from_intraday(by_day: dict) -> list[dict]:
         if r:
             out.append({"date": date, "h": max(b.h for b in r), "l": min(b.l for b in r), "c": r[-1].c})
     return out
+
+
+def run_strategy(bars: list, ctx: dict, name: str) -> tuple[dict | None, str]:
+    """One of config.STRATEGIES for one session: its rules, then its filter on the day's first signal."""
+    st = C.STRATEGIES[name]
+    tr, status = run_day(bars, ctx, dict(C.RULES, **st["rules"]))
+    if tr and not C.STRATEGY_FILTERS[st["filter"]](tr):
+        why = "against the first 15-min candle" if (tr["side"] == "long") != tr["or_candle_up"] else "breakout volume too low"
+        return None, f"{status}: filtered, {why}"
+    return tr, status

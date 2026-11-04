@@ -85,6 +85,30 @@ def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "
             cells[fname] = st
         grid.append({"variant": name, "rules": {k: rules[k] for k in ("or_minutes", "entry", "entry_cutoff", "stop", "target")}, "cells": cells})
 
+    # ---- the three strategies paper traded side by side (v1 control, v2 candle, v3 candle + volume)
+    strategies = {}
+    cut = C.FACTORS_FOUND_FROM
+    oos_dates = [d for d in dates if d < cut]
+    ins_dates = [d for d in dates if d >= cut]
+    for name in C.STRATEGIES:
+        trades = []
+        for d in dates:
+            tr, _ = E.run_strategy(by_day[d], E.daily_context(daily, d), name)
+            if tr:
+                tr["date"] = d
+                trades.append(tr)
+        for t in trades:
+            rows.append({"variant": f"Strategy: {name}", **t})
+        strategies[name] = {
+            "all": A.stats(trades, len(dates)),
+            "out_of_sample": A.stats([t for t in trades if t["date"] < cut], len(oos_dates)),
+            "in_sample": A.stats([t for t in trades if t["date"] >= cut], len(ins_dates)),
+            "recent": A.stats([t for t in trades if recent and t["date"] >= recent[0]], len(recent)),
+            "by_year": A.by_key(trades, lambda t: t["date"][:4]),
+            "by_side": A.by_key(trades, lambda t: t["side"], ["long", "short"]),
+            "equity": A.equity(trades),
+        }
+
     rec_base = [t for t in base_trades if recent and t["date"] >= recent[0]]
     summary = {
         "generated": dt.datetime.now(data.NY).strftime("%Y-%m-%d %H:%M ET"),
@@ -100,6 +124,8 @@ def run(days: int = C.BACKTEST_DAYS, by_day: dict | None = None, source: str = "
             "last_trades": base_trades[-15:],
         },
         "filters": list(C.FILTERS), "grid": grid,
+        "strategies": strategies, "factors_found_from": cut,
+        "out_of_sample_sessions": len(oos_dates), "in_sample_sessions": len(ins_dates),
     }
     (OUT / "summary.json").write_text(json.dumps(summary, indent=1, default=str))
     if rows:

@@ -91,27 +91,58 @@ def _table(rows: list, title: str) -> str:
 def _today(t: dict) -> str:
     if not t:
         return "<p class='muted'>No live check yet.</p>"
-    kv = [("Status", t.get("status")), ("Range high", t.get("or_high")), ("Range low", t.get("or_low")),
+    kv = [("Range high", t.get("or_high")), ("Range low", t.get("or_low")),
+          ("First 15-min candle", t.get("first_candle")),
           ("VWAP", t.get("vwap")), ("Last", f"{t.get('last')} ({t.get('last_bar')} bar)" if t.get("last") else None),
           ("Checked", f"{t.get('date')} {t.get('checked')} via {t.get('source')}")]
-    tr = t.get("trade")
-    if tr:
-        kv.insert(1, ("Paper trade", f"{tr['side'].upper()} at {tr['entry']}, stop {tr['stop']}, target {tr['target']}, "
-                                    f"{tr['exit_reason']} {_r(tr['r_net'])}R"))
+    sts = t.get("strategies") or {}
+    if not sts:
+        kv.insert(0, ("Status", t.get("status")))
+    for name, x in sts.items():
+        txt = x.get("status", "")
+        if x.get("side"):
+            txt = (f"{x['side'].upper()} at {x['entry']}, stop {x['stop']}, target {x.get('target') or '3:55 PM'}: "
+                   f"{x['exit_reason']} {_r(x['r_net'])}R")
+        kv.append((name, txt))
     return "<dl class='kv'>" + "".join(f"<dt>{k}</dt><dd>{html.escape(str(v))}</dd>" for k, v in kv if v is not None) + "</dl>"
 
 
 def _paper(trades: list) -> str:
     if not trades:
-        return "<p class='muted'>No paper trades yet. The bot records the first signal each day.</p>"
+        return "<p class='muted'>No paper trades yet. Each strategy records the first signal each day that passes its filter.</p>"
     rows = "".join(
-        f"<tr><td>{t['date']}</td><td>{t['side']}</td><td>{hhmm(t['signal_min'])}</td><td>{t.get('detected', '-')}</td>"
+        f"<tr><td>{t['date']}</td><td>{html.escape(t.get('strategy', 'v1 control'))}</td><td>{t['side']}</td><td>{hhmm(t['signal_min'])}</td><td>{t.get('detected', '-')}</td>"
         f"<td>{t['entry']}</td><td>{t['stop']}</td><td>{t.get('target') or '-'}</td><td>{t['exit']}</td><td>{t['exit_reason']}</td>"
-        f"<td class='{_cls(t['r_net'])}'>{_r(t['r_net'])}</td></tr>" for t in reversed(trades[-60:]))
-    st = A.stats([t for t in trades if t["exit_reason"] != "open"])
-    summ = f"<p>{st['n']} closed, {st.get('win', 0)}% win, {_r(st.get('avg'))}R per trade.</p>" if st.get("n") else ""
-    return (summ + "<div class='scroll'><table><thead><tr><th>Date</th><th>Side</th><th>Signal bar</th><th>Seen</th><th>Entry</th>"
+        f"<td class='{_cls(t['r_net'])}'>{_r(t['r_net'])}</td></tr>" for t in reversed(trades[-90:]))
+    summ = ""
+    for name in C.STRATEGIES:
+        st = A.stats([t for t in trades if t["exit_reason"] != "open" and t.get("strategy", "v1 control") == name])
+        summ += (f"<p><b>{html.escape(name)}:</b> {st['n']} closed, {st.get('win', 0)}% win, {_r(st.get('avg'))}R per trade.</p>"
+                 if st.get("n") else f"<p><b>{html.escape(name)}:</b> no closed trades yet.</p>")
+    return (summ + "<div class='scroll'><table><thead><tr><th>Date</th><th>Strategy</th><th>Side</th><th>Signal bar</th><th>Seen</th><th>Entry</th>"
             "<th>Stop</th><th>Target</th><th>Exit</th><th>How</th><th>R net</th></tr></thead><tbody>" + rows + "</tbody></table></div>")
+
+
+def _strategies(s: dict) -> str:
+    if not s.get("strategies"):
+        return ""
+    cols = [("out_of_sample", f"Out of sample (before {s['factors_found_from']})"), ("in_sample", "Period the factors came from"),
+            ("recent", "Last 6 months"), ("all", "All")]
+    head = "".join(f"<th>{c}</th>" for _, c in cols)
+    body = ""
+    for name, st in s["strategies"].items():
+        tds = ""
+        for k, _ in cols:
+            x = st[k]
+            tds += (f"<td class='{_cls(x.get('avg'))}'><b>{_r(x.get('avg'))}R</b><br><small>{x['n']} trades, {x.get('per_week', '-')}/wk, "
+                    f"{x.get('win', '-')}% win, t {x.get('t') or '-'}</small></td>" if x.get("n") else "<td class='na'>-</td>")
+        body += f"<tr><th class='rowh'>{html.escape(name)}</th>{tds}</tr>"
+    yrs = "".join(_table(st["by_year"], f"{name}: by year") for name, st in s["strategies"].items())
+    return ("<h2>Paper-traded strategies in the backtest</h2><p class='muted'>v1 is the original rules. v2 trades only with the first 15-minute candle. "
+            f"v3 also needs breakout volume of at least {C.VOL_MIN}x. v2 and v3 allow a 1% stop on longs and 0.5% on shorts. "
+            "The out-of-sample column is the fair test, because the candle and volume factors were found in the later period.</p>"
+            f"<div class='card'><div class='scroll'><table class='grid'><thead><tr><th>Strategy</th>{head}</tr></thead><tbody>{body}</tbody></table></div></div>"
+            f"<div class='minis'>{yrs}</div>")
 
 
 CSS = """
@@ -158,6 +189,7 @@ def build() -> Path:
         b = s["baseline"]
         parts += [f"<h2>Backtest</h2><p class='muted'>{s['sessions']} sessions, {s['first']} to {s['last']} ({html.escape(s['source'])}). "
                   f"Generated {s['generated']}. Net of {C.COST_PER_SHARE_PER_SIDE * 100:.0f}¢ per share per side.</p>",
+                  _strategies(s),
                   "<div class='row'>" + _tiles(b["all"], "Baseline, full period") + _tiles(b["recent"], f"Baseline, last 6 months (from {s.get('recent_first')})") + "</div>",
                   "<div class='card'><h3>Baseline cumulative R (longs 1x, shorts 0.5x)</h3>" + _equity_svg(b["equity"]) + "</div>",
                   "<h2>Side-by-side tests</h2><p class='muted'>Average R per trade, net of costs. Hover a cell for trades, win rate, halves and the last 6 months. "

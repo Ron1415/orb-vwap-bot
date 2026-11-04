@@ -110,8 +110,32 @@ def test_random_sanity():
     assert worst < 0.15, worst
 
 
+def test_strategies_and_side_risk():
+    # first candle up (OR open 100, close 100.5); breakout long, risk about 1.3% -> v1 at 5% cap trades,
+    # side caps: long 1% cap skips it; a narrower day passes
+    narrow = [(100, 100.3, 99.95, 100.1), (100.1, 100.35, 100.0, 100.2), (100.2, 100.4, 100.05, 100.3)]
+    up = mk(narrow + [(100.3, 100.6, 100.25, 100.55), (100.55, 100.7, 100.5, 100.6)] + [FLAT] * 75)
+    v1, _ = E.run_strategy(up, {}, "v1 control")
+    v2, _ = E.run_strategy(up, {}, "v2 candle")
+    assert v1 and v2 and v2["side"] == "long", (v1, v2)
+    # same chart mirrored into a short after an UP first candle -> v2 filters it out, v1 trades it
+    dn = mk([(100, 100.05, 99.7, 99.9), (99.9, 100.0, 99.65, 99.8), (99.8, 100.1, 99.6, 100.05)]
+            + [(100.0, 100.0, 99.4, 99.45), (99.45, 99.5, 99.3, 99.35)] + [(99.4, 99.45, 99.3, 99.4)] * 75)
+    v1, _ = E.run_strategy(dn, {}, "v1 control")
+    v2, st = E.run_strategy(dn, {}, "v2 candle")
+    assert v1 and v1["side"] == "short" and v2 is None, (v1, st)
+    assert C.STRATEGY_FILTERS["candle"](v1) is False and C.STRATEGY_FILTERS[None](v1)
+    # side risk: a short risking 0.6% is skipped with the 0.5% short cap, a long risking 0.6% is not
+    r = dict(C.RULES, max_risk_pct_long=1.0, max_risk_pct_short=0.5)
+    tr, st = E.run_day(dn, {}, r)
+    assert tr is None and "risk too large" in st and v1["risk_pct"] > 0.5, (tr, st)
+    tl, _ = E.run_day(up, {}, dict(r, max_risk_pct_long=0.3))
+    assert tl is None and E.run_day(up, {}, r)[0]["risk_pct"] > 0.3
+    print("strategies + side risk ok")
+
+
 if __name__ == "__main__":
     for f in [test_long_target, test_short_needs_vwap, test_stop_first_and_size, test_cutoff_and_eod,
-              test_half_trail, test_next_bar_risk_skip, test_random_sanity]:
+              test_half_trail, test_next_bar_risk_skip, test_strategies_and_side_risk, test_random_sanity]:
         f()
     print("ALL TESTS PASSED")

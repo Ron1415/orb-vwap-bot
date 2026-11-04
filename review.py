@@ -41,6 +41,17 @@ def backtest_review(s: dict) -> str:
         L.append(f"- **{h['label']}:** {_s(h)}")
     L.append(f"- **Size-weighted total (longs 1x, shorts 0.5x):** {b['all'].get('sized_total', 0)}R")
     L.append("- **Days without a trade:** " + (", ".join(f"{k} {v}" for k, v in b["status"].items() if k != "trade") or "none"))
+    if s.get("strategies"):
+        L += ["", "## The three paper-traded strategies",
+              f"The candle and volume factors were found on {s['factors_found_from']} onward. Earlier sessions "
+              f"({s.get('out_of_sample_sessions', 0)}) are out of sample: the fair test of v2 and v3.", "",
+              "| Strategy | Out of sample | Found period | Last 6 months | All |", "|---|---|---|---|---|"]
+        cell = lambda st: (f"{st['n']} trades, {st['avg']:+.2f}R, t {st.get('t') or '-'}, PF {st.get('pf') or '-'}"
+                           if st.get("n") else "no trades")
+        for name, st in s["strategies"].items():
+            L.append(f"| {name} | {cell(st['out_of_sample'])} | {cell(st['in_sample'])} | {cell(st['recent'])} | {cell(st['all'])} |")
+        for name, st in s["strategies"].items():
+            L.append(f"- **{name} by year:** " + "; ".join(f"{r['label']} {r.get('avg', 0):+.2f}R (n={r['n']})" for r in st["by_year"]))
     L += ["", "## Best variant and filter combinations (at least "
           f"{C.MIN_TRADES_TO_JUDGE} trades)", "",
           "| Variant | Filter | Trades | Win | Avg R | ±SE | PF | Halves | Last 6 mo | Steady |",
@@ -77,7 +88,9 @@ def live_review(trades: list[dict]) -> str:
     import analysis as A
     L = ["# SPY ORB-15 + VWAP: live paper review", ""]
     closed = [t for t in trades if t.get("exit_reason") not in (None, "open")]
-    L.append(f"- **Baseline paper trades:** {_s(A.stats(closed))}")
+    for name in C.STRATEGIES:
+        L.append(f"- **{name}:** {_s(A.stats([t for t in closed if t.get('strategy', 'v1 control') == name]))}")
+    closed = [t for t in closed if t.get("strategy", "v1 control") == "v1 control"]
     by_v: dict = {}
     for t in closed:
         for v, r in (t.get("variants") or {}).items():

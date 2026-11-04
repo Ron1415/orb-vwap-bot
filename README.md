@@ -13,6 +13,17 @@ Paper trades only; there is no broker connection.
 7. **Size:** longs 1x, shorts 0.5x (lower risk on shorts).
 8. **Costs:** 1 cent per share per side; every headline result is net of costs.
 
+## Paper-traded strategies (approved November 4, 2026)
+| Strategy | Rule | Risk limit |
+|---|---|---|
+| v1 control | The original rules above, unchanged | 1% both sides |
+| v2 candle | Trade only in the direction of the first 15-minute candle (9:30-9:45 close vs open) | longs 1%, shorts 0.5% |
+| v3 candle + volume | v2, and the breakout bar's volume is at least 0.9x the average opening-range bar | longs 1%, shorts 0.5% |
+
+Only the day's first signal counts; if it fails a strategy's filter, that strategy does not trade that day.
+The backtest covers about 5 years (1250 sessions). Sessions before November 25, 2024 are reported separately
+as out of sample, because the candle and volume factors were found in the later period.
+
 ## Side-by-side tests (every day re-run with each)
 - Stops: other side of range, middle of range, VWAP.
 - Exits: 1R, 2R, range width, hold to 3:55 PM, half at 1R then trail VWAP.
@@ -40,7 +51,7 @@ Paper trades only; there is no broker connection.
 2. Create the workflow with **Add file → Create new file**, name it `.github/workflows/orb.yml`, and paste the contents of `orb.yml`.
 3. **Settings → Secrets and variables → Actions:** add `ALPACA_KEY_ID` and `ALPACA_SECRET_KEY` (the same free keys as fvg-scanner).
 4. **Settings → Pages:** set Source to **GitHub Actions**.
-5. **Actions → SPY ORB VWAP bot → Run workflow:** mode `backtest`, 500 days. Then the schedule runs the live paper checks.
+5. **Actions → SPY ORB VWAP bot → Run workflow:** mode `backtest`, 1250 days. Then the schedule runs the live paper checks.
 
 ## Outputs
 - `backtest/summary.json`, `backtest/trades.csv.gz` (every variant), `backtest/review.md`
