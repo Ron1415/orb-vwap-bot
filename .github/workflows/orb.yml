@@ -2,15 +2,15 @@ name: SPY ORB VWAP bot
 
 on:
   schedule:
-    # Every 5 minutes 13:00-16:55 UTC (covers 9:30-11:30 AM ET in both summer and winter time),
-    # then every 15 minutes to 21:45 UTC to follow open trades and run the end-of-day job.
     - cron: "*/5 13-16 * * 1-5"
     - cron: "*/15 17-21 * * 1-5"
   workflow_dispatch:
     inputs:
       mode:
-        description: "auto | backtest | live | eod | report"
-        default: "auto"
+        description: "What to run"
+        type: choice
+        options: [backtest, auto, live, eod, report]
+        default: backtest
       backtest_days:
         description: "Sessions to backtest (500 is about 2 years; needs Alpaca keys beyond ~60)"
         default: "500"
@@ -48,18 +48,21 @@ jobs:
           ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
         run: |
-          MODE="${{ github.event.inputs.mode || 'auto' }}"
+          MODE="$(echo "${{ github.event.inputs.mode || 'auto' }}" | tr '[:upper:]' '[:lower:]' | xargs)"
+          echo "Mode: $MODE"
           case "$MODE" in
             backtest) python run.py --backtest "${{ github.event.inputs.backtest_days || '500' }}" ;;
             live)     python run.py --live ;;
             eod)      python run.py --eod ;;
             report)   python run.py --report ;;
-            *)        python run.py --auto ;;
+            auto)     python run.py --auto ;;
+            *)        echo "Unknown mode: $MODE"; exit 1 ;;
           esac
       - name: Save results
         run: |
           git config user.name "orb-bot"
           git config user.email "orb-bot@users.noreply.github.com"
+          ls -la backtest live 2>/dev/null || echo "No backtest or live files were created"
           git add -A backtest live || true
           if ! git diff --cached --quiet; then
             git commit -m "ORB bot update $(date -u +%F' '%H:%M)"
