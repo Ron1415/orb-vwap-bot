@@ -1,13 +1,13 @@
 {
  "date": "2026-11-06",
- "checked": "15:27 ET",
+ "checked": "16:54 ET",
  "symbols": {
   "SPY": {
    "source": "Yahoo",
-   "bars": 71,
-   "last": 737.9,
-   "last_bar": "3:20 PM",
-   "vwap": 738.8,
+   "bars": 78,
+   "last": 735.34,
+   "last_bar": "3:55 PM",
+   "vwap": 738.51,
    "or_high": 738.99,
    "or_low": 734.58,
    "first_candle": "up",
@@ -20,8 +20,8 @@
      "entry": 740.59,
      "stop": 734.506,
      "target": 752.7582,
-     "exit_reason": "open",
-     "r_net": -0.4454,
+     "exit_reason": "eod",
+     "r_net": -0.8826,
      "watch": false
     },
     "v2 candle": {
@@ -32,8 +32,8 @@
      "entry": 740.59,
      "stop": 734.506,
      "target": 752.7582,
-     "exit_reason": "open",
-     "r_net": -0.4454,
+     "exit_reason": "eod",
+     "r_net": -0.8826,
      "watch": false
     },
     "v2b candle, shorts in weak market": {
@@ -44,8 +44,8 @@
      "entry": 740.59,
      "stop": 734.506,
      "target": 752.7582,
-     "exit_reason": "open",
-     "r_net": -0.4454,
+     "exit_reason": "eod",
+     "r_net": -0.8826,
      "watch": false
     },
     "v3 candle + volume": {
@@ -56,10 +56,10 @@
   },
   "QQQ": {
    "source": "Yahoo",
-   "bars": 71,
-   "last": 658.8,
-   "last_bar": "3:20 PM",
-   "vwap": 659.57,
+   "bars": 78,
+   "last": 656.22,
+   "last_bar": "3:55 PM",
+   "vwap": 659.34,
    "or_high": 661.73,
    "or_low": 655.17,
    "first_candle": "up",
@@ -81,10 +81,10 @@
   },
   "XLK": {
    "source": "Yahoo",
-   "bars": 71,
-   "last": 165.34,
-   "last_bar": "3:20 PM",
-   "vwap": 165.11,
+   "bars": 78,
+   "last": 164.79,
+   "last_bar": "3:55 PM",
+   "vwap": 165.08,
    "or_high": 167.31,
    "or_low": 165.47,
    "first_candle": "up",
@@ -106,10 +106,10 @@
   },
   "SMH": {
    "source": "Yahoo",
-   "bars": 71,
-   "last": 464.45,
-   "last_bar": "3:20 PM",
-   "vwap": 463.98,
+   "bars": 78,
+   "last": 463.73,
+   "last_bar": "3:55 PM",
+   "vwap": 463.96,
    "or_high": 473.89,
    "or_low": 464.77,
    "first_candle": "down",
@@ -131,10 +131,10 @@
   },
   "IWM": {
    "source": "Yahoo",
-   "bars": 71,
-   "last": 274.17,
-   "last_bar": "3:20 PM",
-   "vwap": 272.85,
+   "bars": 78,
+   "last": 273.64,
+   "last_bar": "3:55 PM",
+   "vwap": 273.05,
    "or_high": 272.12,
    "or_low": 270.23,
    "first_candle": "up",
@@ -147,8 +147,8 @@
      "entry": 272.66,
      "stop": 270.2027,
      "target": 277.5745,
-     "exit_reason": "open",
-     "r_net": 0.6043,
+     "exit_reason": "eod",
+     "r_net": 0.3703,
      "watch": true
     },
     "v2 candle": {
@@ -159,8 +159,8 @@
      "entry": 272.66,
      "stop": 270.2027,
      "target": 277.5745,
-     "exit_reason": "open",
-     "r_net": 0.6043,
+     "exit_reason": "eod",
+     "r_net": 0.3703,
      "watch": true
     },
     "v2b candle, shorts in weak market": {
@@ -171,8 +171,8 @@
      "entry": 272.66,
      "stop": 270.2027,
      "target": 277.5745,
-     "exit_reason": "open",
-     "r_net": 0.6043,
+     "exit_reason": "eod",
+     "r_net": 0.3703,
      "watch": true
     },
     "v3 candle + volume": {
@@ -183,10 +183,10 @@
   },
   "DIA": {
    "source": "Yahoo",
-   "bars": 71,
-   "last": 513.41,
-   "last_bar": "3:20 PM",
-   "vwap": 512.81,
+   "bars": 78,
+   "last": 512.18,
+   "last_bar": "3:55 PM",
+   "vwap": 512.78,
    "or_high": 512.29,
    "or_low": 508.66,
    "first_candle": "up",
@@ -199,8 +199,8 @@
      "entry": 513.51,
      "stop": 508.6087,
      "target": 523.3127,
-     "exit_reason": "open",
-     "r_net": -0.0245,
+     "exit_reason": "eod",
+     "r_net": -0.278,
      "watch": true
     },
     "v2 candle": {
@@ -211,8 +211,8 @@
      "entry": 513.51,
      "stop": 508.6087,
      "target": 523.3127,
-     "exit_reason": "open",
-     "r_net": -0.0245,
+     "exit_reason": "eod",
+     "r_net": -0.278,
      "watch": true
     },
     "v2b candle, shorts in weak market": {
@@ -223,8 +223,8 @@
      "entry": 513.51,
      "stop": 508.6087,
      "target": 523.3127,
-     "exit_reason": "open",
-     "r_net": -0.0245,
+     "exit_reason": "eod",
+     "r_net": -0.278,
      "watch": true
     },
     "v3 candle + volume": {
