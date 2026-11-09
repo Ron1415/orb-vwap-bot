@@ -13,13 +13,13 @@
 |---|---|---|---|
 | Stop: VWAP; Target: range width | 12 | +0.67 | +8.01 |
 | Stop: VWAP; Target 2R | 12 | +0.67 | +7.99 |
-| Stop: VWAP; Hold to 3:55 PM | 12 | +0.66 | +7.94 |
-| Stop: middle of range; Hold to 3:55 PM | 12 | +0.56 | +6.77 |
+| Stop: VWAP; Hold to 3:55 PM | 12 | +0.66 | +7.95 |
+| Stop: middle of range; Hold to 3:55 PM | 12 | +0.56 | +6.78 |
 | Stop: middle of range; Target: range width | 12 | +0.56 | +6.68 |
 | OR 5 min | 12 | +0.48 | +5.70 |
+| Stop: VWAP; Half at 1R, trail VWAP | 12 | +0.43 | +5.21 |
 | Stop: middle of range; Target 2R | 12 | +0.41 | +4.87 |
-| Stop: VWAP; Half at 1R, trail VWAP | 12 | +0.38 | +4.51 |
-| Stop: middle of range; Half at 1R, trail VWAP | 12 | +0.35 | +4.14 |
+| Stop: middle of range; Half at 1R, trail VWAP | 12 | +0.39 | +4.73 |
 | Side risk caps (long 1%, short 0.5%) | 10 | +0.29 | +2.86 |
 | Stop: other side of range; Half at 1R, trail VWAP | 12 | +0.24 | +2.92 |
 | Stop: other side of range; Target 1R | 12 | +0.23 | +2.74 |
@@ -28,7 +28,7 @@
 | Stop: VWAP; Target 1R | 12 | +0.18 | +2.21 |
 | Enter at signal close | 12 | +0.17 | +2.09 |
 | Stop: other side of range; Hold to 3:55 PM | 12 | +0.17 | +2.07 |
-| Signals until 3:00 PM | 12 | +0.16 | +1.98 |
+| Signals until 3:00 PM | 12 | +0.17 | +1.98 |
 | OR 30 min | 7 | +0.11 | +0.80 |
 | Signals until 10:30 AM | 11 | +0.09 | +0.94 |
 
