@@ -1,13 +1,13 @@
 {
  "date": "2026-11-11",
- "checked": "10:56 ET",
+ "checked": "11:55 ET",
  "symbols": {
   "SPY": {
    "source": "Yahoo",
-   "bars": 17,
-   "last": 757.98,
-   "last_bar": "10:50 AM",
-   "vwap": 756.68,
+   "bars": 29,
+   "last": 759.72,
+   "last_bar": "11:50 AM",
+   "vwap": 758.42,
    "or_high": 757.95,
    "or_low": 755.66,
    "first_candle": "down",
@@ -56,10 +56,10 @@
   },
   "QQQ": {
    "source": "Yahoo",
-   "bars": 17,
-   "last": 691.11,
-   "last_bar": "10:50 AM",
-   "vwap": 687.97,
+   "bars": 29,
+   "last": 692.99,
+   "last_bar": "11:50 AM",
+   "vwap": 689.98,
    "or_high": 689.02,
    "or_low": 684.91,
    "first_candle": "down",
@@ -90,10 +90,10 @@
   },
   "XLK": {
    "source": "Yahoo",
-   "bars": 17,
-   "last": 175.08,
-   "last_bar": "10:50 AM",
-   "vwap": 173.48,
+   "bars": 29,
+   "last": 175.71,
+   "last_bar": "11:50 AM",
+   "vwap": 173.84,
    "or_high": 174.3,
    "or_low": 172.9,
    "first_candle": "down",
@@ -107,7 +107,7 @@
      "stop": 172.8776,
      "target": 177.4449,
      "exit_reason": "open",
-     "r_net": 0.4335,
+     "r_net": 0.8441,
      "watch": false
     },
     "v2 candle": {
@@ -124,10 +124,10 @@
   },
   "SMH": {
    "source": "Yahoo",
-   "bars": 17,
-   "last": 509.88,
-   "last_bar": "10:50 AM",
-   "vwap": 502.31,
+   "bars": 29,
+   "last": 513.69,
+   "last_bar": "11:50 AM",
+   "vwap": 504.26,
    "or_high": 505.49,
    "or_low": 498.39,
    "first_candle": "down",
@@ -149,35 +149,35 @@
   },
   "IWM": {
    "source": "Yahoo",
-   "bars": 17,
-   "last": 282.45,
-   "last_bar": "10:50 AM",
-   "vwap": 282.13,
+   "bars": 29,
+   "last": 282.77,
+   "last_bar": "11:50 AM",
+   "vwap": 282.26,
    "or_high": 283.09,
    "or_low": 281.48,
    "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2 candle": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2b candle, shorts in weak market": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v3 candle + volume": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     }
    },
-   "status": "Watching for a breakout"
+   "status": "No breakout before 11:30 AM"
   },
   "DIA": {
    "source": "Yahoo",
-   "bars": 17,
-   "last": 520.88,
-   "last_bar": "10:50 AM",
-   "vwap": 521.19,
+   "bars": 29,
+   "last": 522.42,
+   "last_bar": "11:50 AM",
+   "vwap": 521.42,
    "or_high": 523.15,
    "or_low": 520.77,
    "first_candle": "down",
@@ -191,7 +191,7 @@
      "stop": 523.2021,
      "target": 515.4858,
      "exit_reason": "open",
-     "r_net": -0.105,
+     "r_net": -0.7037,
      "watch": true
     },
     "v2 candle": {
@@ -203,7 +203,7 @@
      "stop": 523.2021,
      "target": 515.4858,
      "exit_reason": "open",
-     "r_net": -0.105,
+     "r_net": -0.7037,
      "watch": true
     },
     "v2b candle, shorts in weak market": {
@@ -215,7 +215,7 @@
      "stop": 523.2021,
      "target": 515.4858,
      "exit_reason": "open",
-     "r_net": -0.105,
+     "r_net": -0.7037,
      "watch": true
     },
     "v3 candle + volume": {
@@ -226,5 +226,5 @@
   }
  },
  "errors": [],
- "status": "SPY: SHORT signal on the 10:10 AM bar; QQQ: SHORT signal on the 9:45 AM bar; XLK: LONG signal on the 10:40 AM bar; SMH: SHORT signal on the 9:45 AM bar: skipped, risk too large; IWM: Watching for a breakout; DIA: SHORT signal on the 10:10 AM bar (watch-only ETF)"
+ "status": "SPY: SHORT signal on the 10:10 AM bar; QQQ: SHORT signal on the 9:45 AM bar; XLK: LONG signal on the 10:40 AM bar; SMH: SHORT signal on the 9:45 AM bar: skipped, risk too large; IWM: No breakout before 11:30 AM; DIA: SHORT signal on the 10:10 AM bar (watch-only ETF)"
 }
