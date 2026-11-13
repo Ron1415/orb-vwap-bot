@@ -1,203 +1,185 @@
 {
- "date": "2026-11-12",
- "checked": "17:14 ET",
+ "date": "2026-11-13",
+ "checked": "09:59 ET",
  "symbols": {
   "SPY": {
    "source": "Yahoo",
-   "bars": 78,
-   "last": 757.2,
-   "last_bar": "3:55 PM",
-   "vwap": 759.85,
-   "or_high": 757.88,
-   "or_low": 753.67,
-   "first_candle": "up",
-   "strategies": {
-    "v1 control": {
-     "status": "LONG signal on the 9:50 AM bar",
-     "strategy": "v1 control",
-     "symbol": "SPY",
-     "side": "long",
-     "entry": 758.01,
-     "stop": 753.5942,
-     "target": 766.8417,
-     "exit_reason": "eod",
-     "r_net": -0.2896,
-     "watch": false
-    },
-    "v2 candle": {
-     "status": "LONG signal on the 9:50 AM bar",
-     "strategy": "v2 candle",
-     "symbol": "SPY",
-     "side": "long",
-     "entry": 758.01,
-     "stop": 753.5942,
-     "target": 766.8417,
-     "exit_reason": "eod",
-     "r_net": -0.2896,
-     "watch": false
-    },
-    "v2b candle, shorts in weak market": {
-     "status": "LONG signal on the 9:50 AM bar",
-     "strategy": "v2b candle, shorts in weak market",
-     "symbol": "SPY",
-     "side": "long",
-     "entry": 758.01,
-     "stop": 753.5942,
-     "target": 766.8417,
-     "exit_reason": "eod",
-     "r_net": -0.2896,
-     "watch": false
-    },
-    "v3 candle + volume": {
-     "status": "LONG signal on the 9:50 AM bar: filtered, breakout volume too low"
-    }
-   },
-   "status": "LONG signal on the 9:50 AM bar"
-  },
-  "QQQ": {
-   "source": "Yahoo",
-   "bars": 78,
-   "last": 688.21,
-   "last_bar": "3:55 PM",
-   "vwap": 690.14,
-   "or_high": 688.22,
-   "or_low": 679.84,
-   "first_candle": "up",
-   "strategies": {
-    "v1 control": {
-     "status": "LONG signal on the 10:50 AM bar: skipped, risk too large"
-    },
-    "v2 candle": {
-     "status": "LONG signal on the 10:50 AM bar: skipped, risk too large"
-    },
-    "v2b candle, shorts in weak market": {
-     "status": "LONG signal on the 10:50 AM bar: skipped, risk too large"
-    },
-    "v3 candle + volume": {
-     "status": "LONG signal on the 10:50 AM bar: skipped, risk too large"
-    }
-   },
-   "status": "LONG signal on the 10:50 AM bar: skipped, risk too large"
-  },
-  "XLK": {
-   "source": "Yahoo",
-   "bars": 78,
-   "last": 173.74,
-   "last_bar": "3:55 PM",
-   "vwap": 173.14,
-   "or_high": 172.7,
-   "or_low": 169.35,
-   "first_candle": "up",
-   "strategies": {
-    "v1 control": {
-     "status": "LONG signal on the 9:55 AM bar: skipped, risk too large"
-    },
-    "v2 candle": {
-     "status": "LONG signal on the 9:55 AM bar: skipped, risk too large"
-    },
-    "v2b candle, shorts in weak market": {
-     "status": "LONG signal on the 9:55 AM bar: skipped, risk too large"
-    },
-    "v3 candle + volume": {
-     "status": "LONG signal on the 9:55 AM bar: skipped, risk too large"
-    }
-   },
-   "status": "LONG signal on the 9:55 AM bar: skipped, risk too large"
-  },
-  "SMH": {
-   "source": "Yahoo",
-   "bars": 78,
-   "last": 502.02,
-   "last_bar": "3:55 PM",
-   "vwap": 500.05,
-   "or_high": 500.57,
-   "or_low": 484.5,
-   "first_candle": "up",
-   "strategies": {
-    "v1 control": {
-     "status": "LONG signal on the 10:40 AM bar: skipped, risk too large"
-    },
-    "v2 candle": {
-     "status": "LONG signal on the 10:40 AM bar: skipped, risk too large"
-    },
-    "v2b candle, shorts in weak market": {
-     "status": "LONG signal on the 10:40 AM bar: skipped, risk too large"
-    },
-    "v3 candle + volume": {
-     "status": "LONG signal on the 10:40 AM bar: skipped, risk too large"
-    }
-   },
-   "status": "LONG signal on the 10:40 AM bar: skipped, risk too large"
-  },
-  "IWM": {
-   "source": "Yahoo",
-   "bars": 78,
-   "last": 278.46,
-   "last_bar": "3:55 PM",
-   "vwap": 279.89,
-   "or_high": 282.2,
-   "or_low": 280.36,
+   "bars": 5,
+   "last": 755.54,
+   "last_bar": "9:50 AM",
+   "vwap": 757.7,
+   "or_high": 760.12,
+   "or_low": 755.88,
    "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "SHORT signal on the 9:55 AM bar (watch-only ETF)",
+     "status": "SHORT signal on the 9:45 AM bar",
+     "strategy": "v1 control",
+     "symbol": "SPY",
+     "side": "short",
+     "entry": 755.38,
+     "stop": 760.1955,
+     "target": 745.7489,
+     "exit_reason": "open",
+     "r_net": -0.0374,
+     "watch": false
+    },
+    "v2 candle": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v2b candle, shorts in weak market": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v3 candle + volume": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    }
+   },
+   "status": "SHORT signal on the 9:45 AM bar"
+  },
+  "QQQ": {
+   "source": "Yahoo",
+   "bars": 5,
+   "last": 683.47,
+   "last_bar": "9:50 AM",
+   "vwap": 685.73,
+   "or_high": 688.75,
+   "or_low": 683.8,
+   "first_candle": "down",
+   "strategies": {
+    "v1 control": {
+     "status": "SHORT signal on the 9:45 AM bar",
+     "strategy": "v1 control",
+     "symbol": "QQQ",
+     "side": "short",
+     "entry": 682.82,
+     "stop": 688.8183,
+     "target": 670.8235,
+     "exit_reason": "open",
+     "r_net": -0.1125,
+     "watch": false
+    },
+    "v2 candle": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v2b candle, shorts in weak market": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v3 candle + volume": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    }
+   },
+   "status": "SHORT signal on the 9:45 AM bar"
+  },
+  "XLK": {
+   "source": "Yahoo",
+   "bars": 5,
+   "last": 171.07,
+   "last_bar": "9:50 AM",
+   "vwap": 172.13,
+   "or_high": 173.65,
+   "or_low": 171.25,
+   "first_candle": "down",
+   "strategies": {
+    "v1 control": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v2 candle": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v2b candle, shorts in weak market": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v3 candle + volume": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    }
+   },
+   "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+  },
+  "SMH": {
+   "source": "Yahoo",
+   "bars": 5,
+   "last": 489.09,
+   "last_bar": "9:50 AM",
+   "vwap": 493.58,
+   "or_high": 500.27,
+   "or_low": 490.89,
+   "first_candle": "down",
+   "strategies": {
+    "v1 control": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v2 candle": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v2b candle, shorts in weak market": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    },
+    "v3 candle + volume": {
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+    }
+   },
+   "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
+  },
+  "IWM": {
+   "source": "Yahoo",
+   "bars": 5,
+   "last": 277.26,
+   "last_bar": "9:50 AM",
+   "vwap": 278.16,
+   "or_high": 279.17,
+   "or_low": 277.6,
+   "first_candle": "down",
+   "strategies": {
+    "v1 control": {
+     "status": "SHORT signal on the 9:45 AM bar (watch-only ETF)",
      "strategy": "v1 control",
      "symbol": "IWM",
      "side": "short",
-     "entry": 279.87,
-     "stop": 282.228,
-     "target": 275.154,
-     "exit_reason": "eod",
-     "r_net": 0.6213,
+     "entry": 277.27,
+     "stop": 279.1977,
+     "target": 273.4145,
+     "exit_reason": "open",
+     "r_net": -0.0052,
      "watch": true
     },
     "v2 candle": {
-     "status": "SHORT signal on the 9:55 AM bar: skipped, risk too large"
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
     },
     "v2b candle, shorts in weak market": {
-     "status": "SHORT signal on the 9:55 AM bar: skipped, risk too large"
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
     },
     "v3 candle + volume": {
-     "status": "SHORT signal on the 9:55 AM bar: skipped, risk too large"
+     "status": "SHORT signal on the 9:45 AM bar: skipped, risk too large"
     }
    },
-   "status": "SHORT signal on the 9:55 AM bar (watch-only ETF)"
+   "status": "SHORT signal on the 9:45 AM bar (watch-only ETF)"
   },
   "DIA": {
    "source": "Yahoo",
-   "bars": 78,
-   "last": 522.49,
-   "last_bar": "3:55 PM",
-   "vwap": 524.62,
-   "or_high": 525.82,
-   "or_low": 523.85,
-   "first_candle": "up",
+   "bars": 5,
+   "last": 523.12,
+   "last_bar": "9:50 AM",
+   "vwap": 523.95,
+   "or_high": 524.99,
+   "or_low": 523.29,
+   "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "SHORT signal on the 9:55 AM bar (watch-only ETF)",
-     "strategy": "v1 control",
-     "symbol": "DIA",
-     "side": "short",
-     "entry": 523.67,
-     "stop": 525.8724,
-     "target": 519.2652,
-     "exit_reason": "stop",
-     "r_net": -1.0091,
-     "watch": true
+     "status": "SHORT signal on the 9:50 AM bar (no bar to enter)"
     },
     "v2 candle": {
-     "status": "SHORT signal on the 9:55 AM bar: filtered, against the first 15-min candle"
+     "status": "SHORT signal on the 9:50 AM bar (no bar to enter)"
     },
     "v2b candle, shorts in weak market": {
-     "status": "SHORT signal on the 9:55 AM bar: filtered, against the first 15-min candle"
+     "status": "SHORT signal on the 9:50 AM bar (no bar to enter)"
     },
     "v3 candle + volume": {
-     "status": "SHORT signal on the 9:55 AM bar: filtered, against the first 15-min candle"
+     "status": "SHORT signal on the 9:50 AM bar (no bar to enter)"
     }
    },
-   "status": "SHORT signal on the 9:55 AM bar (watch-only ETF)"
+   "status": "SHORT signal on the 9:50 AM bar (no bar to enter)"
   }
  },
  "errors": [],
- "status": "SPY: LONG signal on the 9:50 AM bar; QQQ: LONG signal on the 10:50 AM bar: skipped, risk too large; XLK: LONG signal on the 9:55 AM bar: skipped, risk too large; SMH: LONG signal on the 10:40 AM bar: skipped, risk too large; IWM: SHORT signal on the 9:55 AM bar (watch-only ETF); DIA: SHORT signal on the 9:55 AM bar (watch-only ETF)"
+ "status": "SPY: SHORT signal on the 9:45 AM bar; QQQ: SHORT signal on the 9:45 AM bar; XLK: SHORT signal on the 9:45 AM bar: skipped, risk too large; SMH: SHORT signal on the 9:45 AM bar: skipped, risk too large; IWM: SHORT signal on the 9:45 AM bar (watch-only ETF); DIA: SHORT signal on the 9:50 AM bar (no bar to enter)"
 }
