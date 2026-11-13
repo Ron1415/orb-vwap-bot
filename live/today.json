@@ -1,13 +1,13 @@
 {
  "date": "2026-11-13",
- "checked": "14:29 ET",
+ "checked": "15:25 ET",
  "symbols": {
   "SPY": {
    "source": "Yahoo",
-   "bars": 59,
+   "bars": 71,
    "last": 753.26,
-   "last_bar": "2:20 PM",
-   "vwap": 750.75,
+   "last_bar": "3:20 PM",
+   "vwap": 751.93,
    "or_high": 760.12,
    "or_low": 755.88,
    "first_candle": "down",
@@ -38,10 +38,10 @@
   },
   "QQQ": {
    "source": "Yahoo",
-   "bars": 59,
-   "last": 679.56,
-   "last_bar": "2:20 PM",
-   "vwap": 675.22,
+   "bars": 71,
+   "last": 679.39,
+   "last_bar": "3:20 PM",
+   "vwap": 675.67,
    "or_high": 688.75,
    "or_low": 683.8,
    "first_candle": "down",
@@ -55,7 +55,7 @@
      "stop": 688.8183,
      "target": 670.8235,
      "exit_reason": "open",
-     "r_net": 0.5402,
+     "r_net": 0.5685,
      "watch": false
     },
     "v2 candle": {
@@ -72,10 +72,10 @@
   },
   "XLK": {
    "source": "Yahoo",
-   "bars": 59,
-   "last": 170.25,
-   "last_bar": "2:20 PM",
-   "vwap": 169.51,
+   "bars": 71,
+   "last": 170.13,
+   "last_bar": "3:20 PM",
+   "vwap": 169.57,
    "or_high": 173.65,
    "or_low": 171.25,
    "first_candle": "down",
@@ -97,10 +97,10 @@
   },
   "SMH": {
    "source": "Yahoo",
-   "bars": 59,
-   "last": 485.68,
-   "last_bar": "2:20 PM",
-   "vwap": 482.26,
+   "bars": 71,
+   "last": 485.9,
+   "last_bar": "3:20 PM",
+   "vwap": 482.68,
    "or_high": 500.27,
    "or_low": 490.89,
    "first_candle": "down",
@@ -122,10 +122,10 @@
   },
   "IWM": {
    "source": "Yahoo",
-   "bars": 59,
-   "last": 277.13,
-   "last_bar": "2:20 PM",
-   "vwap": 276.67,
+   "bars": 71,
+   "last": 277.33,
+   "last_bar": "3:20 PM",
+   "vwap": 276.69,
    "or_high": 279.17,
    "or_low": 277.6,
    "first_candle": "down",
@@ -139,7 +139,7 @@
      "stop": 279.1977,
      "target": 273.4145,
      "exit_reason": "open",
-     "r_net": 0.0622,
+     "r_net": -0.0415,
      "watch": true
     },
     "v2 candle": {
@@ -156,10 +156,10 @@
   },
   "DIA": {
    "source": "Yahoo",
-   "bars": 59,
-   "last": 522.53,
-   "last_bar": "2:20 PM",
-   "vwap": 522.23,
+   "bars": 71,
+   "last": 522.7,
+   "last_bar": "3:20 PM",
+   "vwap": 522.08,
    "or_high": 524.99,
    "or_low": 523.29,
    "first_candle": "down",
@@ -173,7 +173,7 @@
      "stop": 525.0423,
      "target": 519.1555,
      "exit_reason": "open",
-     "r_net": 0.2726,
+     "r_net": 0.1835,
      "watch": true
     },
     "v2 candle": {
@@ -185,7 +185,7 @@
      "stop": 525.0423,
      "target": 519.1555,
      "exit_reason": "open",
-     "r_net": 0.2726,
+     "r_net": 0.1835,
      "watch": true
     },
     "v2b candle, shorts in weak market": {
@@ -197,7 +197,7 @@
      "stop": 525.0423,
      "target": 519.1555,
      "exit_reason": "open",
-     "r_net": 0.2726,
+     "r_net": 0.1835,
      "watch": true
     },
     "v3 candle + volume": {
