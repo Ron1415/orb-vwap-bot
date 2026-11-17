@@ -12,13 +12,13 @@
 | Variant | Trades | Avg R | Total R |
 |---|---|---|---|
 | Stop: VWAP; Target 2R | 30 | +0.76 | +22.73 |
-| Stop: VWAP; Hold to 3:55 PM | 30 | +0.68 | +20.28 |
+| Stop: VWAP; Hold to 3:55 PM | 30 | +0.66 | +19.74 |
 | Stop: middle of range; Target 2R | 30 | +0.65 | +19.63 |
-| Stop: middle of range; Hold to 3:55 PM | 30 | +0.63 | +18.89 |
-| Stop: VWAP; Target: range width | 30 | +0.63 | +18.79 |
+| Stop: middle of range; Hold to 3:55 PM | 30 | +0.63 | +18.90 |
+| Stop: VWAP; Target: range width | 30 | +0.62 | +18.63 |
 | Stop: middle of range; Target: range width | 30 | +0.54 | +16.26 |
 | OR 5 min | 30 | +0.49 | +14.80 |
-| Stop: VWAP; Half at 1R, trail VWAP | 30 | +0.45 | +13.51 |
+| Stop: VWAP; Half at 1R, trail VWAP | 30 | +0.45 | +13.41 |
 | OR 30 min | 20 | +0.40 | +8.09 |
 | Stop: middle of range; Half at 1R, trail VWAP | 30 | +0.37 | +11.06 |
 | Enter at signal close | 30 | +0.34 | +10.22 |
@@ -28,7 +28,7 @@
 | Stop: other side of range; Half at 1R, trail VWAP | 30 | +0.28 | +8.32 |
 | Stop: other side of range; Target 1R | 30 | +0.27 | +8.23 |
 | Stop: middle of range; Target 1R | 30 | +0.27 | +8.02 |
-| Stop: other side of range; Hold to 3:55 PM | 30 | +0.25 | +7.54 |
+| Stop: other side of range; Hold to 3:55 PM | 30 | +0.25 | +7.55 |
 | Stop: other side of range; Target: range width | 30 | +0.22 | +6.61 |
 | Side risk caps (long 1%, short 0.5%) | 20 | +0.18 | +3.51 |
 
