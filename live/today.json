@@ -1,13 +1,13 @@
 {
  "date": "2026-11-18",
- "checked": "10:17 ET",
+ "checked": "11:23 ET",
  "symbols": {
   "SPY": {
    "source": "Yahoo",
-   "bars": 9,
-   "last": 732.37,
-   "last_bar": "10:10 AM",
-   "vwap": 732.37,
+   "bars": 22,
+   "last": 728.25,
+   "last_bar": "11:15 AM",
+   "vwap": 730.56,
    "or_high": 735.06,
    "or_low": 730.24,
    "first_candle": "down",
@@ -21,7 +21,7 @@
      "stop": 735.133,
      "target": 718.954,
      "exit_reason": "open",
-     "r_net": -0.4912,
+     "r_net": 0.2726,
      "watch": false
     },
     "v2 candle": {
@@ -38,34 +38,34 @@
   },
   "QQQ": {
    "source": "Yahoo",
-   "bars": 9,
-   "last": 660.54,
-   "last_bar": "10:10 AM",
-   "vwap": 659.49,
+   "bars": 22,
+   "last": 655.04,
+   "last_bar": "11:15 AM",
+   "vwap": 657.84,
    "or_high": 662.65,
    "or_low": 655.08,
    "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "Watching for a breakout"
+     "status": "SHORT signal on the 11:15 AM bar (no bar to enter)"
     },
     "v2 candle": {
-     "status": "Watching for a breakout"
+     "status": "SHORT signal on the 11:15 AM bar (no bar to enter)"
     },
     "v2b candle, shorts in weak market": {
-     "status": "Watching for a breakout"
+     "status": "SHORT signal on the 11:15 AM bar (no bar to enter)"
     },
     "v3 candle + volume": {
-     "status": "Watching for a breakout"
+     "status": "SHORT signal on the 11:15 AM bar (no bar to enter)"
     }
    },
-   "status": "Watching for a breakout"
+   "status": "SHORT signal on the 11:15 AM bar (no bar to enter)"
   },
   "XLK": {
    "source": "Yahoo",
-   "bars": 9,
-   "last": 164.16,
-   "last_bar": "10:10 AM",
+   "bars": 22,
+   "last": 162.55,
+   "last_bar": "11:15 AM",
    "vwap": 163.51,
    "or_high": 165.39,
    "or_low": 162.24,
@@ -88,10 +88,10 @@
   },
   "SMH": {
    "source": "Yahoo",
-   "bars": 9,
-   "last": 462.43,
-   "last_bar": "10:10 AM",
-   "vwap": 461.34,
+   "bars": 22,
+   "last": 455.98,
+   "last_bar": "11:15 AM",
+   "vwap": 461.01,
    "or_high": 469.5,
    "or_low": 455.57,
    "first_candle": "down",
@@ -113,10 +113,10 @@
   },
   "IWM": {
    "source": "Yahoo",
-   "bars": 9,
-   "last": 270.86,
-   "last_bar": "10:10 AM",
-   "vwap": 269.65,
+   "bars": 22,
+   "last": 269.44,
+   "last_bar": "11:15 AM",
+   "vwap": 269.84,
    "or_high": 269.91,
    "or_low": 267.9,
    "first_candle": "up",
@@ -130,7 +130,7 @@
      "stop": 267.873,
      "target": 273.924,
      "exit_reason": "open",
-     "r_net": 0.471,
+     "r_net": -0.233,
      "watch": true
     },
     "v2 candle": {
@@ -142,7 +142,7 @@
      "stop": 267.873,
      "target": 273.924,
      "exit_reason": "open",
-     "r_net": 0.471,
+     "r_net": -0.233,
      "watch": true
     },
     "v2b candle, shorts in weak market": {
@@ -154,7 +154,7 @@
      "stop": 267.873,
      "target": 273.924,
      "exit_reason": "open",
-     "r_net": 0.471,
+     "r_net": -0.233,
      "watch": true
     },
     "v3 candle + volume": {
@@ -165,10 +165,10 @@
   },
   "DIA": {
    "source": "Yahoo",
-   "bars": 9,
-   "last": 503.11,
-   "last_bar": "10:10 AM",
-   "vwap": 504.3,
+   "bars": 22,
+   "last": 500.75,
+   "last_bar": "11:15 AM",
+   "vwap": 503.43,
    "or_high": 506.22,
    "or_low": 503.72,
    "first_candle": "down",
@@ -182,7 +182,7 @@
      "stop": 506.2703,
      "target": 495.2295,
      "exit_reason": "open",
-     "r_net": -0.1467,
+     "r_net": 0.4945,
      "watch": true
     },
     "v2 candle": {
@@ -199,5 +199,5 @@
   }
  },
  "errors": [],
- "status": "SPY: SHORT signal on the 9:45 AM bar; QQQ: Watching for a breakout; XLK: Watching for a breakout; SMH: Watching for a breakout; IWM: LONG signal on the 9:50 AM bar (watch-only ETF); DIA: SHORT signal on the 9:45 AM bar (watch-only ETF)"
+ "status": "SPY: SHORT signal on the 9:45 AM bar; QQQ: SHORT signal on the 11:15 AM bar (no bar to enter); XLK: Watching for a breakout; SMH: Watching for a breakout; IWM: LONG signal on the 9:50 AM bar (watch-only ETF); DIA: SHORT signal on the 9:45 AM bar (watch-only ETF)"
 }
