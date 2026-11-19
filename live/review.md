@@ -1,7 +1,7 @@
 # ETF ORB-15 + VWAP: live paper review
 
-- **v1 control:** 17 trades, 35.3% win, +0.02R ±0.30 per trade, profit factor 1.04, max drawdown -5.04R
-  - watch-only shorts (not counted): 19 trades, 57.9% win, +0.36R ±0.27 per trade, profit factor 2.21, max drawdown 0.0R
+- **v1 control:** 19 trades, 36.8% win, +0.07R ±0.30 per trade, profit factor 1.14, max drawdown -5.04R
+  - watch-only shorts (not counted): 21 trades, 61.9% win, +0.52R ±0.26 per trade, profit factor 2.91, max drawdown 0.0R
 - **v2 candle:** 6 trades, 16.7% win, -0.41R ±0.32 per trade, profit factor 0.29, max drawdown -2.47R
   - watch-only shorts (not counted): 15 trades, 53.3% win, +0.41R ±0.34 per trade, profit factor 2.15, max drawdown 0.0R
 - **v2b candle, shorts in weak market:** 9 trades, 33.3% win, +0.06R ±0.42 per trade, profit factor 1.11, max drawdown -2.98R
@@ -11,25 +11,25 @@
 
 | Variant | Trades | Avg R | Total R |
 |---|---|---|---|
-| Stop: VWAP; Target 2R | 33 | +0.69 | +22.69 |
-| Stop: middle of range; Target 2R | 33 | +0.59 | +19.60 |
-| Stop: VWAP; Target: range width | 33 | +0.58 | +19.06 |
-| Stop: VWAP; Hold to 3:55 PM | 33 | +0.55 | +18.29 |
-| Stop: middle of range; Hold to 3:55 PM | 33 | +0.53 | +17.34 |
-| OR 5 min | 33 | +0.50 | +16.44 |
-| Stop: middle of range; Target: range width | 33 | +0.49 | +16.21 |
-| Stop: VWAP; Half at 1R, trail VWAP | 33 | +0.36 | +11.87 |
-| OR 30 min | 22 | +0.35 | +7.62 |
-| Enter at signal close | 33 | +0.31 | +10.29 |
-| Signals until 3:00 PM | 33 | +0.31 | +10.23 |
-| Stop: middle of range; Half at 1R, trail VWAP | 33 | +0.29 | +9.52 |
-| Signals until 10:30 AM | 32 | +0.29 | +9.19 |
-| Stop: other side of range; Target 1R | 33 | +0.28 | +9.13 |
-| Stop: VWAP; Target 1R | 33 | +0.27 | +8.90 |
-| Stop: other side of range; Half at 1R, trail VWAP | 33 | +0.27 | +8.80 |
-| Stop: other side of range; Target: range width | 33 | +0.24 | +8.01 |
-| Stop: other side of range; Hold to 3:55 PM | 33 | +0.23 | +7.68 |
-| Stop: middle of range; Target 1R | 33 | +0.21 | +6.98 |
+| Stop: VWAP; Hold to 3:55 PM | 37 | +0.86 | +31.86 |
+| Stop: VWAP; Target 2R | 37 | +0.83 | +30.64 |
+| Stop: middle of range; Hold to 3:55 PM | 37 | +0.79 | +29.22 |
+| Stop: middle of range; Target 2R | 37 | +0.74 | +27.56 |
+| Stop: VWAP; Target: range width | 37 | +0.69 | +25.50 |
+| OR 5 min | 37 | +0.66 | +24.41 |
+| Stop: middle of range; Target: range width | 37 | +0.59 | +21.93 |
+| Stop: VWAP; Half at 1R, trail VWAP | 37 | +0.54 | +20.14 |
+| Stop: middle of range; Half at 1R, trail VWAP | 37 | +0.46 | +16.99 |
+| OR 30 min | 25 | +0.42 | +10.61 |
+| Enter at signal close | 37 | +0.41 | +15.27 |
+| Signals until 3:00 PM | 37 | +0.41 | +15.21 |
+| Signals until 10:30 AM | 36 | +0.39 | +14.17 |
+| Stop: other side of range; Hold to 3:55 PM | 37 | +0.38 | +14.03 |
+| Stop: other side of range; Half at 1R, trail VWAP | 37 | +0.38 | +13.89 |
+| Stop: other side of range; Target 1R | 37 | +0.35 | +13.11 |
+| Stop: VWAP; Target 1R | 37 | +0.35 | +12.86 |
+| Stop: other side of range; Target: range width | 37 | +0.31 | +11.31 |
+| Stop: middle of range; Target 1R | 37 | +0.30 | +10.94 |
 | Side risk caps (long 1%, short 0.5%) | 21 | +0.18 | +3.74 |
 
 Compare these with the backtest after about 40 paper trades.
