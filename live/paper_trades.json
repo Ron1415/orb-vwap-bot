@@ -3927,7 +3927,29 @@
   "date": "2026-11-20",
   "strategy": "v1 control",
   "symbol": "SPY",
-  "detected": "10:16 ET"
+  "detected": "10:16 ET",
+  "variants": {
+   "Stop: other side of range; Target 1R": -1.0053,
+   "Stop: other side of range; Target: range width": 0.6468,
+   "Stop: other side of range; Hold to 3:55 PM": -1.0053,
+   "Stop: other side of range; Half at 1R, trail VWAP": -1.0053,
+   "Stop: middle of range; Target 1R": 0.9921,
+   "Stop: middle of range; Target 2R": -1.0079,
+   "Stop: middle of range; Target: range width": 0.9597,
+   "Stop: middle of range; Hold to 3:55 PM": -1.0079,
+   "Stop: middle of range; Half at 1R, trail VWAP": 0.4921,
+   "Stop: VWAP; Target 1R": 0.9918,
+   "Stop: VWAP; Target 2R": -1.0082,
+   "Stop: VWAP; Target: range width": 0.9871,
+   "Stop: VWAP; Hold to 3:55 PM": -1.0082,
+   "Stop: VWAP; Half at 1R, trail VWAP": 0.4918,
+   "OR 5 min": -1.0053,
+   "OR 30 min": 1.9967,
+   "Enter at signal close": -1.0055,
+   "Signals until 3:00 PM": -1.0053,
+   "Signals until 10:30 AM": -1.0053,
+   "Side risk caps (long 1%, short 0.5%)": -1.0053
+  }
  },
  {
   "side": "long",
@@ -3964,7 +3986,28 @@
   "date": "2026-11-20",
   "strategy": "v1 control",
   "symbol": "QQQ",
-  "detected": "10:16 ET"
+  "detected": "10:16 ET",
+  "variants": {
+   "Stop: other side of range; Target 1R": -1.0033,
+   "Stop: other side of range; Target: range width": -1.0033,
+   "Stop: other side of range; Hold to 3:55 PM": -1.0033,
+   "Stop: other side of range; Half at 1R, trail VWAP": -1.0033,
+   "Stop: middle of range; Target 1R": -1.0057,
+   "Stop: middle of range; Target 2R": -1.0057,
+   "Stop: middle of range; Target: range width": -1.0057,
+   "Stop: middle of range; Hold to 3:55 PM": -1.0057,
+   "Stop: middle of range; Half at 1R, trail VWAP": -1.0057,
+   "Stop: VWAP; Target 1R": 0.9942,
+   "Stop: VWAP; Target 2R": -1.0058,
+   "Stop: VWAP; Target: range width": -1.0058,
+   "Stop: VWAP; Hold to 3:55 PM": -1.0058,
+   "Stop: VWAP; Half at 1R, trail VWAP": 0.4942,
+   "OR 5 min": -1.0041,
+   "Enter at signal close": -1.0033,
+   "Signals until 3:00 PM": -1.0033,
+   "Signals until 10:30 AM": -1.0033,
+   "Side risk caps (long 1%, short 0.5%)": -1.0033
+  }
  },
  {
   "side": "long",
@@ -4001,7 +4044,28 @@
   "date": "2026-11-20",
   "strategy": "v1 control",
   "symbol": "DIA",
-  "detected": "10:16 ET"
+  "detected": "10:16 ET",
+  "variants": {
+   "Stop: other side of range; Target 1R": -1.0058,
+   "Stop: other side of range; Target: range width": -1.0058,
+   "Stop: other side of range; Hold to 3:55 PM": -1.0058,
+   "Stop: other side of range; Half at 1R, trail VWAP": -1.0058,
+   "Stop: middle of range; Target 1R": 0.9884,
+   "Stop: middle of range; Target 2R": -1.0116,
+   "Stop: middle of range; Target: range width": -1.0116,
+   "Stop: middle of range; Hold to 3:55 PM": -1.0116,
+   "Stop: middle of range; Half at 1R, trail VWAP": 0.4884,
+   "Stop: VWAP; Target 1R": 0.9847,
+   "Stop: VWAP; Target 2R": -1.0153,
+   "Stop: VWAP; Target: range width": -1.0153,
+   "Stop: VWAP; Hold to 3:55 PM": -1.0153,
+   "Stop: VWAP; Half at 1R, trail VWAP": 0.4847,
+   "OR 5 min": -1.0065,
+   "Enter at signal close": -1.0057,
+   "Signals until 3:00 PM": -1.0058,
+   "Signals until 10:30 AM": -1.0058,
+   "Side risk caps (long 1%, short 0.5%)": -1.0058
+  }
  },
  {
   "side": "long",
