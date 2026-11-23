@@ -1,13 +1,13 @@
 {
  "date": "2026-11-23",
- "checked": "11:32 ET",
+ "checked": "12:33 ET",
  "symbols": {
   "SPY": {
    "source": "Yahoo",
-   "bars": 24,
-   "last": 724.07,
-   "last_bar": "11:25 AM",
-   "vwap": 721.59,
+   "bars": 36,
+   "last": 722.75,
+   "last_bar": "12:25 PM",
+   "vwap": 721.65,
    "or_high": 724.8,
    "or_low": 713.53,
    "first_candle": "down",
@@ -29,10 +29,10 @@
   },
   "QQQ": {
    "source": "Yahoo",
-   "bars": 24,
-   "last": 652.64,
-   "last_bar": "11:25 AM",
-   "vwap": 653.06,
+   "bars": 36,
+   "last": 651.45,
+   "last_bar": "12:25 PM",
+   "vwap": 651.63,
    "or_high": 656.25,
    "or_low": 641.95,
    "first_candle": "down",
@@ -54,85 +54,85 @@
   },
   "XLK": {
    "source": "Yahoo",
-   "bars": 24,
-   "last": 162.82,
-   "last_bar": "11:25 AM",
-   "vwap": 162.71,
+   "bars": 36,
+   "last": 162.55,
+   "last_bar": "12:25 PM",
+   "vwap": 162.64,
    "or_high": 164.79,
    "or_low": 159.9,
    "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2 candle": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2b candle, shorts in weak market": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v3 candle + volume": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     }
    },
-   "status": "Watching for a breakout"
+   "status": "No breakout before 11:30 AM"
   },
   "SMH": {
    "source": "Yahoo",
-   "bars": 24,
-   "last": 461.91,
-   "last_bar": "11:25 AM",
-   "vwap": 459.72,
+   "bars": 36,
+   "last": 460.33,
+   "last_bar": "12:25 PM",
+   "vwap": 459.69,
    "or_high": 469.35,
    "or_low": 449.64,
    "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2 candle": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2b candle, shorts in weak market": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v3 candle + volume": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     }
    },
-   "status": "Watching for a breakout"
+   "status": "No breakout before 11:30 AM"
   },
   "IWM": {
    "source": "Yahoo",
-   "bars": 24,
-   "last": 265.38,
-   "last_bar": "11:25 AM",
-   "vwap": 264.55,
+   "bars": 36,
+   "last": 265.0,
+   "last_bar": "12:25 PM",
+   "vwap": 264.51,
    "or_high": 266.08,
    "or_low": 263.22,
    "first_candle": "down",
    "strategies": {
     "v1 control": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2 candle": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v2b candle, shorts in weak market": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     },
     "v3 candle + volume": {
-     "status": "Watching for a breakout"
+     "status": "No breakout before 11:30 AM"
     }
    },
-   "status": "Watching for a breakout"
+   "status": "No breakout before 11:30 AM"
   },
   "DIA": {
    "source": "Yahoo",
-   "bars": 24,
-   "last": 496.39,
-   "last_bar": "11:25 AM",
-   "vwap": 493.29,
+   "bars": 36,
+   "last": 495.69,
+   "last_bar": "12:25 PM",
+   "vwap": 493.58,
    "or_high": 494.54,
    "or_low": 489.8,
    "first_candle": "down",
@@ -146,7 +146,7 @@
      "stop": 489.7505,
      "target": 504.404,
      "exit_reason": "open",
-     "r_net": 0.3552,
+     "r_net": 0.2119,
      "watch": true
     },
     "v2 candle": {
@@ -163,5 +163,5 @@
   }
  },
  "errors": [],
- "status": "SPY: LONG signal on the 10:20 AM bar: skipped, risk too large; QQQ: LONG signal on the 10:20 AM bar: skipped, risk too large; XLK: Watching for a breakout; SMH: Watching for a breakout; IWM: Watching for a breakout; DIA: LONG signal on the 10:10 AM bar (watch-only ETF)"
+ "status": "SPY: LONG signal on the 10:20 AM bar: skipped, risk too large; QQQ: LONG signal on the 10:20 AM bar: skipped, risk too large; XLK: No breakout before 11:30 AM; SMH: No breakout before 11:30 AM; IWM: No breakout before 11:30 AM; DIA: LONG signal on the 10:10 AM bar (watch-only ETF)"
 }
